@@ -1,0 +1,50 @@
+﻿@model IEnumerable<JordanDeBordProject3.Models.ViewModels.PermissionsUserVM>
+
+@{
+    var listName = ViewData["ListName"];
+    var listId = (int)ViewData["ListId"];
+    var newPermission = new GrantPermissionsUserVM() { ListId = listId };
+}
+
+<h1>@listName</h1>
+
+<div id="alertArea" class="alert alert-warning" role="alert" style="display:none">
+    <span id="messageArea"></span>
+    <button id="alertCloseBtn" type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailAddress)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody"perm-table-body-@listId>
+        @foreach (var item in Model)
+        {
+            <tr id="perm-row-@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailAddress)
+                </td>
+                <td>
+                    <a id="revokeBtn-@item.Id" class="btn btn-sm btn-danger">Revoke</a>
+
+                </td>
+            </tr>
+        }
+    </tbody"perm-table-body-@listId>
+</table>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#grantPermissionModal">
+    Grant Permission
+</button> |
+<a class="btn btn-primary" asp-action="Index" asp-controller="Home">Back to Home</a>
+<partial name="_GrantPermissionModal" model="@newPermission" />
+
+@section Scripts{
+    <script src="~/js/groceryListPermissions.js" defer></script>
+}

@@ -1,6 +1,6 @@
 ﻿'use strict';
-(function _homeIndexMain() {
-    console.log("Home")
+(function _groceryListPermissions() {
+    console.log("Permissions")
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/groceryListHub")
         .build();
@@ -13,7 +13,10 @@
         console.log(incoming);
 
         if (incoming.type === "LIST-CREATED") {
-            _updateListTable(incoming.data);
+
+        }
+        else if (incoming.type === "PERMISSION-GRANTED") {
+            _updatePermTable(incoming.data);
         }
     });
 
@@ -22,36 +25,26 @@
         return console.error(err.toString());
     });
 
-
     // EVENT LISTENERS FROM PAGE.
-    const createGroceryListForm = document.querySelector("#createGroceryListForm");
+    const grantPermissionForm = document.querySelector("#grantPermissionForm");
 
-    // If the user clicks the close button on the alert area, hide it.
     $('#alertCloseBtn').on('click', function _hideAlert() {
         $('#alertArea').hide(400);
     });
 
-    // If the user clicks the cancel button in the create modal, clear the data and hide it.
-    $('#createCancelBtn').on('click', (e) => {
-        e.preventDefault();
-        $('input').val("");
-        $('#createGroceryListModal').modal('hide');
-    })
-
     // If the user submits the name, verify and submit it with Ajax.
-    createGroceryListForm.addEventListener('submit', (e) => {
+    grantPermissionForm.addEventListener('submit', (e) => {
         e.preventDefault();
         _clearErrorMessages();
-        _submitWithAjax();
+        _submitPermissionWithAjax();
     });
 
 
-
     // AJAX ACTIONS
-    function _submitWithAjax() {
-        const url = createGroceryListForm.getAttribute('action') + "ajax";
-        const method = createGroceryListForm.getAttribute('method');
-        const formData = new FormData(createGroceryListForm);
+    function _submitPermissionWithAjax() {
+        const url = grantPermissionForm.getAttribute('action') + "ajax";
+        const method = grantPermissionForm.getAttribute('method');
+        const formData = new FormData(grantPermissionForm);
 
         fetch(url, {
             method: method,
@@ -64,12 +57,17 @@
                 return response.json();
             })
             .then(result => {
-                if (result?.message === "created") {
+                if (result?.message === "granted-permission") {
                     $('#createGroceryListModal').modal('hide');
-                    _notifyConnectedClients("LIST-CREATED", result.id);
-                    $('#messageArea').html("A new grocery list was created!");
+                    _notifyConnectedClients("PERMISSION-GRANTED", result.id );
+                    $('#messageArea').html("A user was granted access!");
                     $('#alertArea').show(400);
                 }
+                else if (result?.message === "invalid-permission") {
+                    $('#createGroceryListModal').modal('hide');
+                    $('#messageArea').html("Invalid Email!");
+                    $('#alertArea').show(400);
+                } 
                 else {
                     _reportErrors(result);
                 }
@@ -79,12 +77,10 @@
             })
     }
 
-
     // OTHER METHODS/FUNCTIONS
 
-    // Function to add grocery list to index page.
-    function _updateListTable(listId) {
-        fetch(`/grocerylist/listrow/${listId}`)
+    function _updatePermTable(permissionId) {
+        fetch(`/grocerylist/permissionrow/${permissionId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('There was a network error!');
@@ -127,6 +123,16 @@
     function _notifyConnectedClients(type, data) {
         let message = {
             type, data
+        };
+        console.log(JSON.stringify(message));
+        connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
+    }
+    function _notifyConnectedClientsTwoParts(type, data, otherId) {
+        let message = {
+            type, data, otherId
         };
         console.log(JSON.stringify(message));
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))

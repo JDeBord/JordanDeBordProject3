@@ -39,6 +39,55 @@ namespace JordanDeBordProject3.Controllers
             return Json(ModelState);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> EditAjax(EditListVM editListVM) 
+        {
+            if (ModelState.IsValid) 
+            {
+                var list = editListVM.GetGroceryListInstance();
+                await _groceryListRepository.UpdateAsync(list);
+
+                return Json(new { id = list.Id, message = "updated-list" });
+            }
+            return Json(ModelState);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddItemAjax(CreateGroceryItemVM groceryItemVM) 
+        {
+            if (ModelState.IsValid)
+            {
+                var item = groceryItemVM.GetGroceryItemInstance();
+
+                await _groceryListRepository.AddItemAsync(item.GroceryListId, item);
+
+                return Json(new { id = item.Id, message = "added-item", listId=item.GroceryListId });
+            }
+            return Json(ModelState);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> GrantPermissionAjax(GrantPermissionsUserVM grantPermissionsUserVM) 
+        {
+            if (ModelState.IsValid)
+            {
+                var list = await _groceryListRepository.ReadAsync(grantPermissionsUserVM.ListId);
+                var email = grantPermissionsUserVM.EmailAddress;
+
+                var result = await _groceryListRepository.GrantPermissionAsync(list.Id, email);
+
+                if (result != null)
+                {
+                    return Json(new { id = result, message = "granted-permission"});
+                }
+                else 
+                {
+                    return Json(new { listId = list.Id, message = "invalid-permission" });
+                }
+            }
+            return Json(ModelState);
+        }
+
         public async Task<IActionResult> ListRow(int id)
         {
             var user = await _userRepository.ReadAsync(User.Identity.Name);
@@ -59,6 +108,62 @@ namespace JordanDeBordProject3.Controllers
                         NumberItems = list.NumberItems
                     };
                     return PartialView("Views/Home/_AddListRow.cshtml", listToShow);
+                }
+            }
+
+            // Otherwise, return null.
+            return Ok();
+        }
+
+        public async Task<IActionResult> PermissionRow(int id) 
+        {
+            var access = await _groceryListRepository.GetPermissionAsync(id);
+
+            var list = access.GroceryList;
+
+            var user = await _userRepository.ReadAsync(User.Identity.Name);
+
+            if (user == access.ApplicationUser && list != null && access != null) 
+            {
+                var permission = await _userRepository.CheckPermissionAsync(user.UserName, list);
+
+                // If the user has permission to view the list, return the partial view.
+                if (permission)
+                {
+                    var newPerm = new PermissionsUserVM
+                    {
+                        Id = access.Id,
+                        EmailAddress = user.Email,
+                        ListId = list.Id
+                    };
+                    return PartialView("Views/GroceryList/_AddPermissionRow.cshtml", newPerm);
+                }
+            }
+
+            // Otherwise, return null.
+            return Ok();
+        }
+
+        public async Task<IActionResult> ListItemRow(int id)
+        {
+            var user = await _userRepository.ReadAsync(User.Identity.Name);
+            var item = await _groceryListRepository.GetItemAsync(id);
+            var list = await _groceryListRepository.ReadAsync(item.GroceryListId); 
+
+            if (user != null && list != null && item != null)
+            {
+                var permission = await _userRepository.CheckPermissionAsync(user.UserName, list);
+
+                // If the user has permission to view the list, return the partial view.
+                if (permission)
+                {
+                    var listToShow = new GroceryItemVM
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        QuantityToBuy = item.QuantityToBuy
+                    };
+                    return PartialView("Views/GroceryList/_AddItemListRow.cshtml", listToShow);
                 }
             }
 
@@ -122,7 +227,7 @@ namespace JordanDeBordProject3.Controllers
             var model = new EditListVM
             {
                 Id = list.Id,
-                Name = list.Name,
+                ListName = list.Name,
                 GroceryItems = itemModel.ToList()
             };
 
@@ -159,13 +264,23 @@ namespace JordanDeBordProject3.Controllers
                 return Forbid();
             }
 
-            // Get the list of all people granted permission.
+            // Get the list of all additional people granted permission.
+            var additionalUsers = await _groceryListRepository.GetAdditionalUsersAsync(id);
 
-            // New up a View Model and send to View.
+            var model = additionalUsers.Select(u =>
+                new PermissionsUserVM
+                {
+                    Id = u.Id,
+                    EmailAddress = u.ApplicationUser.Email
+                });
+
 
             // set Title
+            ViewData["Title"] = $"Editing Permissions for {list.Name}";
+            ViewData["ListName"] = list.Name;
+            ViewData["ListId"] = list.Id;
 
-            return View();
+            return View(model);
         }
     }
 }

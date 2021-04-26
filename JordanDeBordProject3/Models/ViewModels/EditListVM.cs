@@ -13,7 +13,7 @@ namespace JordanDeBordProject3.Models.ViewModels
 
         [Display(Name = "Grocery List Name")]
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 1)]
-        public string Name { get; set; }
+        public string ListName { get; set; }
 
         [Display(Name= "Grocery Items")]
         public List<GroceryItemVM> GroceryItems { get; set; } = new List<GroceryItemVM>();
@@ -23,7 +23,7 @@ namespace JordanDeBordProject3.Models.ViewModels
             return new GroceryList
             {
                 Id = this.Id,
-                Name = this.Name
+                Name = this.ListName
             };
         }
     }

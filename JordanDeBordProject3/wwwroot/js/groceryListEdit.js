@@ -1,6 +1,6 @@
 ﻿'use strict';
-(function _homeIndexMain() {
-    console.log("Home")
+(function _groceryListEdit() {
+    console.log("Edit")
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/groceryListHub")
         .build();
@@ -13,7 +13,13 @@
         console.log(incoming);
 
         if (incoming.type === "LIST-CREATED") {
-            _updateListTable(incoming.data);
+
+        }
+        else if (incoming.type === "ITEM-ADDED") {
+            _updateGroceryListTable(incoming.data, incoming.otherId);
+        }
+        else if (incoming.type === "LIST-UPDATED") {
+
         }
     });
 
@@ -22,36 +28,65 @@
         return console.error(err.toString());
     });
 
-
     // EVENT LISTENERS FROM PAGE.
-    const createGroceryListForm = document.querySelector("#createGroceryListForm");
+    const createGroceryItemForm = document.querySelector("#createGroceryItemForm");
+    const editGroceryListForm = document.querySelector("#editGroceryListForm");
 
     // If the user clicks the close button on the alert area, hide it.
     $('#alertCloseBtn').on('click', function _hideAlert() {
         $('#alertArea').hide(400);
     });
 
-    // If the user clicks the cancel button in the create modal, clear the data and hide it.
-    $('#createCancelBtn').on('click', (e) => {
-        e.preventDefault();
-        $('input').val("");
-        $('#createGroceryListModal').modal('hide');
-    })
-
-    // If the user submits the name, verify and submit it with Ajax.
-    createGroceryListForm.addEventListener('submit', (e) => {
+    // If the user submits the new item, verify and submit it with Ajax.
+    createGroceryItemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         _clearErrorMessages();
-        _submitWithAjax();
+        _submitItemWithAjax();
     });
 
+    // If the user submits the new name, submit the change with Ajax.
+    editGroceryListForm.addEventListener('click', (e) => {
+        e.preventDefault();
+        _clearErrorMessages();
+        _updateListNameWithAjax();
+    })
 
 
     // AJAX ACTIONS
-    function _submitWithAjax() {
-        const url = createGroceryListForm.getAttribute('action') + "ajax";
-        const method = createGroceryListForm.getAttribute('method');
-        const formData = new FormData(createGroceryListForm);
+    function _updateListNameWithAjax() {
+        const url = createGroceryItemForm.getAttribute('action') + "ajax";
+        const method = createGroceryItemForm.getAttribute('method');
+        const formData = new FormData(createGroceryItemForm);
+
+        fetch(url, {
+            method: method,
+            body: formData
+        })
+            .then(response => {
+            if (!response.ok) {
+                throw new Error('There was a network error!');
+            }
+            return response.json();
+        })
+            .then(result => {
+                if (result?.message === "updated-list") {
+                    _notifyConnectedClients("LIST-UPDATED", result.id);
+                    $('#messageArea').html("Grocery List name updated!");
+                    $('#alertArea').show(400);
+                }
+                else {
+                    _reportErrors(result);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+    }
+
+    function _submitItemWithAjax() {
+        const url = createGroceryItemForm.getAttribute('action') + "ajax";
+        const method = createGroceryItemForm.getAttribute('method');
+        const formData = new FormData(createGroceryItemForm);
 
         fetch(url, {
             method: method,
@@ -64,10 +99,10 @@
                 return response.json();
             })
             .then(result => {
-                if (result?.message === "created") {
-                    $('#createGroceryListModal').modal('hide');
-                    _notifyConnectedClients("LIST-CREATED", result.id);
-                    $('#messageArea').html("A new grocery list was created!");
+                if (result?.message === "added-item") {
+                    $('#createGroceryItemModal').modal('hide');
+                    _notifyConnectedClientsTwoParts("ITEM-ADDED", result.id, result.listId);
+                    $('#messageArea').html("A new grocery item was added!");
                     $('#alertArea').show(400);
                 }
                 else {
@@ -79,12 +114,10 @@
             })
     }
 
-
     // OTHER METHODS/FUNCTIONS
 
-    // Function to add grocery list to index page.
-    function _updateListTable(listId) {
-        fetch(`/grocerylist/listrow/${listId}`)
+    function _updateGroceryListTable(itemId, listId) {
+        fetch(`/grocerylist/listitemrow/${itemId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('There was a network error!');
@@ -92,7 +125,7 @@
                 return response.text();
             })
             .then(result => {
-                $('#table-home-index').append(result);
+                $(`#edit-list-${listId}`).append(result);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -127,6 +160,17 @@
     function _notifyConnectedClients(type, data) {
         let message = {
             type, data
+        };
+        console.log(JSON.stringify(message));
+        connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
+    }
+
+    function _notifyConnectedClientsTwoParts(type, data, otherId) {
+        let message = {
+            type, data, otherId
         };
         console.log(JSON.stringify(message));
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))

@@ -16,12 +16,20 @@ namespace JordanDeBordProject3.Services
 
         Task DeleteAsync(int id);
 
-        Task AddUserAsync(int id, string userId);
+        Task<int?> GrantPermissionAsync(int listId, string email);
 
         Task RemoveUserAsync(int id, string userId);
 
-        Task AddItemAsync(int groceryListId, GroceryItem item);
+        Task<GroceryItem> AddItemAsync(int groceryListId, GroceryItem item);
 
         Task RemoveItemAsync(int groceryListId, int groceryItemId);
+
+        Task<GroceryItem> GetItemAsync(int itemId);
+
+        Task<ICollection<GroceryListUsers>> GetAdditionalUsersAsync(int id);
+
+        Task<GroceryListUsers> GetPermissionAsync(int id);
+
+        Task<string> GetOwnerAsync(int id);
     }
 }

@@ -17,11 +17,13 @@ namespace JordanDeBordProject3.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IGroceryListRepository _groceryListRepository;
 
-        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository)
+        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository, IGroceryListRepository groceryListRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
+            _groceryListRepository = groceryListRepository;
         }
 
         public async Task<IActionResult> Index()

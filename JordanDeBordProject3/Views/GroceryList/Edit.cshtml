@@ -3,11 +3,18 @@
 @{
     bool owner = (bool)ViewData["Owner"];
     var ownerName = ViewData["OwnerName"];
+    var groceryItem = new CreateGroceryItemVM { GroceryListId=Model.Id};
 }
 
 <h1>Owner: @ownerName</h1>
 
-<hr />
+<div id="alertArea" class="alert alert-warning" role="alert" style="display:none">
+    <span id="messageArea"></span>
+    <button id="alertCloseBtn" type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 <div class="row">
     <div class="col-md-4">
         @{if (owner)
@@ -21,9 +28,10 @@
         }
     </div>
 </div>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGroceryItemModal">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createGroceryItemModal">
     Add Item
 </button>
+<partial name="_AddGroceryItemModal" model="@groceryItem" />
 <table class="table">
     <thead>
         <tr>
@@ -51,9 +59,10 @@
     </tbody>
 </table>
 <div>
-    <a asp-action="Index" asp-controller="Home">Back Home</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Home">Back Home</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/groceryListEdit.js" defer></script>
 }

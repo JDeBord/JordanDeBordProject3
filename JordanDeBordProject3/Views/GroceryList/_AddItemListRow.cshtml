@@ -1,0 +1,15 @@
+﻿@model GroceryItemVM
+<tr id="index-row-@Model.Id">
+    <td>
+        @Html.DisplayFor(modelItem => Model.Id)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.QuantityToBuy)
+    </td>
+    <td>
+        <a id="editDelete-@Model.Id" class="btn btn-danger btn-sm">Delete</a>
+    </td>
+</tr>

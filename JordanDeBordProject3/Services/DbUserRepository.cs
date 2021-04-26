@@ -53,7 +53,8 @@ namespace JordanDeBordProject3.Services
         public async Task<ApplicationUser> ReadAsync(string userName)
         {
             var user = await _database.Users.Include(gl => gl.GroceryListUsers)
-                                .ThenInclude(l => l.GroceryList)              
+                                .ThenInclude(l => l.GroceryList)
+                                .ThenInclude(i => i.GroceryItems)
                                 .FirstOrDefaultAsync(u => u.UserName == userName);
 
             return user;
