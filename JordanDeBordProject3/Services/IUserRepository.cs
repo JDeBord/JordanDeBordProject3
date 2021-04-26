@@ -11,5 +11,7 @@ namespace JordanDeBordProject3.Services
         Task<ApplicationUser> ReadAsync(string userName);
 
         Task<ICollection<GroceryList>> ReadAllListsAsync(string userName);
+
+        Task<bool> CheckPermissionAsync(string userName, GroceryList list);
     }
 }

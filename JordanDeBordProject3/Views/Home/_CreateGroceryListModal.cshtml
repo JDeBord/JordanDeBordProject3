@@ -1,0 +1,38 @@
+﻿@*
+    Partial view for Create Grocery List Modal
+*@
+
+@model CreateGroceryListVM
+
+<div class="modal fade" id="createGroceryListModal" tabindex="-1" role="dialog"
+     aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div id="mainContent" class="modal-content">
+            <form id="createGroceryListForm" asp-controller="GroceryList" asp-action="Create">
+
+                <div class="modal-header">
+                    <h5 class="modalTitle" id="createGroceryListModalTitle">Create Grocery List</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button id="createCancelBtn" class="btn btn-secondary">Cancel</button>
+                    <button type="reset" class="btn btn-info">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

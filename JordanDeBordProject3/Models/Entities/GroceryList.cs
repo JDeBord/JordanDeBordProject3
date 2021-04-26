@@ -13,13 +13,14 @@ namespace JordanDeBordProject3.Models.Entities
 
         public string Name { get; set; }
 
-        public List<GroceryItem> GroceryItems { get; set; }
+        public List<GroceryItem> GroceryItems { get; set; } = new List<GroceryItem>();
 
-        public List <GroceryListUsers> GroceryListUsers { get; set; }
+        public List<GroceryListUsers> GroceryListUsers { get; set; } = new List<GroceryListUsers>();
 
-        public string ApplicationUserId { get; set; }
+        // [Required]
+        // public string ApplicationUserId { get; set; }
 
-        public ApplicationUser User { get; set; }
+        // public ApplicationUser User { get; set; }
 
 
         [NotMapped]
@@ -37,9 +38,15 @@ namespace JordanDeBordProject3.Models.Entities
         {
             get 
             {
-                var owner = GroceryListUsers.FirstOrDefault(l => l.Owner == true);
-
-                return owner.ApplicationUser.Email;
+                var owner = GroceryListUsers.FirstOrDefault(u => u.Owner = true);
+                if (owner != null)
+                {
+                    return owner.ApplicationUser.Email;
+                }
+                else 
+                {
+                    return null;
+                }
             }
         }
 

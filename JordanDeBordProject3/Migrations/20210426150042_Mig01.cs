@@ -49,6 +49,19 @@ namespace JordanDeBordProject3.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GroceryLists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroceryLists", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -155,26 +168,6 @@ namespace JordanDeBordProject3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroceryLists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroceryLists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GroceryLists_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GroceryItems",
                 columns: table => new
                 {
@@ -268,11 +261,6 @@ namespace JordanDeBordProject3.Migrations
                 column: "GroceryListId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroceryLists_ApplicationUserId",
-                table: "GroceryLists",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GroceryListUsers_ApplicationUserId",
                 table: "GroceryListUsers",
                 column: "ApplicationUserId");
@@ -310,10 +298,10 @@ namespace JordanDeBordProject3.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "GroceryLists");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "GroceryLists");
         }
     }
 }

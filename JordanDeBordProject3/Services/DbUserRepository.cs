@@ -16,13 +16,24 @@ namespace JordanDeBordProject3.Services
             _database = database;
         }
 
+        public async Task<bool> CheckPermissionAsync(string userName, GroceryList list)
+        {
+            var userLists = await ReadAllListsAsync(userName);
+
+            if (userLists.Contains(list))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<ICollection<GroceryList>> ReadAllListsAsync(string userName)
         {
             var user = await ReadAsync(userName);
-            var lists = await _database.GroceryLists.Where(l => l.ApplicationUserId == user.Id).ToListAsync();
 
             var userAccessLists = user.GroceryListUsers;
 
+            var lists = new List<GroceryList>();
 
             // For each one the user has been granted access, if they also don't own it, add to the list.
             if (userAccessLists != null)
@@ -36,21 +47,14 @@ namespace JordanDeBordProject3.Services
                     }
                 }
             }
-
-            // New up our list that we will return after ordering.
-            List<GroceryList> orderedList = null;
-
-            // If the user has lists, order them by Id. Then return. 
-            if (lists != null)
-            {
-                orderedList = lists.OrderBy(l => l.Id).ToList();
-            }
-                return orderedList;
+            return lists;
         }
 
         public async Task<ApplicationUser> ReadAsync(string userName)
         {
-            var user = await _database.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            var user = await _database.Users.Include(gl => gl.GroceryListUsers)
+                                .ThenInclude(l => l.GroceryList)              
+                                .FirstOrDefaultAsync(u => u.UserName == userName);
 
             return user;
         }

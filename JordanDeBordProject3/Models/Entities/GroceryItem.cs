@@ -16,9 +16,9 @@ namespace JordanDeBordProject3.Models.Entities
 
         public bool Shopped { get; set; }
 
+        [Required]
         public int GroceryListId { get; set; }
 
-        [Required]
         public GroceryList GroceryList { get; set; }
     }
 }

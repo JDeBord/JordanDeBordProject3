@@ -123,15 +123,10 @@ namespace JordanDeBordProject3.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("GroceryLists");
                 });
@@ -308,15 +303,6 @@ namespace JordanDeBordProject3.Migrations
                     b.Navigation("GroceryList");
                 });
 
-            modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryList", b =>
-                {
-                    b.HasOne("JordanDeBordProject3.Models.Entities.ApplicationUser", "User")
-                        .WithMany("GroceryLists")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryListUsers", b =>
                 {
                     b.HasOne("JordanDeBordProject3.Models.Entities.ApplicationUser", "ApplicationUser")
@@ -389,8 +375,6 @@ namespace JordanDeBordProject3.Migrations
 
             modelBuilder.Entity("JordanDeBordProject3.Models.Entities.ApplicationUser", b =>
                 {
-                    b.Navigation("GroceryLists");
-
                     b.Navigation("GroceryListUsers");
                 });
 

@@ -1,12 +1,22 @@
 ﻿@model IEnumerable<JordanDeBordProject3.Models.ViewModels.IndexListVM>
 
 @{
-    GroceryList list = new GroceryList();
+    var list = new CreateGroceryListVM();
 }
 
 <h1>@ViewData["Title"]</h1>
 
+<div id="alertArea" class="alert alert-warning" role="alert" style="display:none">
+    <span id="messageArea"></span>
+    <button id="alertCloseBtn" type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createGroceryListModal">
+    Create New GroceryList
+</button>
+<partial name="_CreateGroceryListModal" model="@list" />
 <table class="table">
     <thead>
         <tr>
@@ -26,14 +36,15 @@
         </tr>
     </thead>
     <tbody id="table-home-index">
-@foreach (var item in Model) {
-        <tr>
-            <partial name="_ListRow" model="@item" />
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr id="index-row-@item.Id">
+                <partial name="_ListRow" model="@item" />
+            </tr>
+        }
     </tbody>
 </table>
 
-@section Scripts{ 
+@section Scripts{
     <script src="~/js/homeIndex.js" defer></script>
-} 
+}

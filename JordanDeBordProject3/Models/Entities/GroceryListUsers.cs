@@ -10,7 +10,7 @@ namespace JordanDeBordProject3.Models.Entities
     {
         public int Id { get; set; }
 
-        public bool Owner { get; set; }
+        public bool Owner { get; set; } = false;
 
         [Required]
         public string ApplicationUserId { get; set; }

@@ -36,7 +36,7 @@ namespace JordanDeBordProject3.Controllers
                 {
                     Id = list.Id,
                     Name = list.Name,
-                    OwnerEmail = list.User.Email,
+                    OwnerEmail = list.OwnerEmail,
                     NumberItems = list.NumberItems
                 });
            

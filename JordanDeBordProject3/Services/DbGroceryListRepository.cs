@@ -39,9 +39,16 @@ namespace JordanDeBordProject3.Services
 
             if (user != null) 
             {
-                groceryList.User = user;
-                user.GroceryLists.Add(groceryList);
-                await _database.GroceryLists.AddAsync(groceryList);
+                var userAccess = new GroceryListUsers
+                {
+                    ApplicationUser = user,
+                    GroceryList = groceryList,
+                    Owner = true
+                };
+                
+                groceryList.GroceryListUsers.Add(userAccess);
+
+                user.GroceryListUsers.Add(userAccess);
 
                 await _database.SaveChangesAsync();
             }
