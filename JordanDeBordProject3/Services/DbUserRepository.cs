@@ -16,24 +16,36 @@ namespace JordanDeBordProject3.Services
             _database = database;
         }
 
-        public async Task<ICollection<GroceryList>> ReadAllLists(string userName)
+        public async Task<ICollection<GroceryList>> ReadAllListsAsync(string userName)
         {
-            //var lists = await _database.GroceryLists.Where(l => l.ApplicationUserId == userId);
+            var user = await ReadAsync(userName);
+            var lists = await _database.GroceryLists.Where(l => l.ApplicationUserId == user.Id).ToListAsync();
 
-           // var userAccessLists = user.GroceryListUsers;
-            
+            var userAccessLists = user.GroceryListUsers;
+
 
             // For each one the user has been granted access, if they also don't own it, add to the list.
-            //foreach (var listAccess in userAccessLists)
-            //{
-            //    var list = listAccess.GroceryList;
-            //    if (!userLists.Contains(list))
-            //    {
-            //        userLists.Add(list);
-            //    }
-            //}
+            if (userAccessLists != null)
+            {
+                foreach (var userList in userAccessLists)
+                {
+                    var list = userList.GroceryList;
+                    if (!lists.Contains(list))
+                    {
+                        lists.Add(list);
+                    }
+                }
+            }
 
-            return null;
+            // New up our list that we will return after ordering.
+            List<GroceryList> orderedList = null;
+
+            // If the user has lists, order them by Id. Then return. 
+            if (lists != null)
+            {
+                orderedList = lists.OrderBy(l => l.Id).ToList();
+            }
+                return orderedList;
         }
 
         public async Task<ApplicationUser> ReadAsync(string userName)

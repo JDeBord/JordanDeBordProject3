@@ -1,8 +1,39 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<JordanDeBordProject3.Models.ViewModels.IndexListVM>
+
+@{
+    GroceryList list = new GroceryList();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>@ViewData["Title"]</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OwnerEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberItems)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="table-home-index">
+@foreach (var item in Model) {
+        <tr>
+            <partial name="_ListRow" model="@item" />
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts{ 
+    <script src="~/js/homeIndex.js" defer></script>
+} 

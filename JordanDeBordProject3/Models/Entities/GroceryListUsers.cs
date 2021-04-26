@@ -10,6 +10,8 @@ namespace JordanDeBordProject3.Models.Entities
     {
         public int Id { get; set; }
 
+        public bool Owner { get; set; }
+
         [Required]
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }

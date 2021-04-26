@@ -1,3 +1,4 @@
+using JordanDeBordProject3.Hubs;
 using JordanDeBordProject3.Models.Entities;
 using JordanDeBordProject3.Services;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,7 @@ namespace JordanDeBordProject3
 
             services.AddScoped<IGroceryListRepository, DbGroceryListRepository>();
             services.AddScoped<IUserRepository, DbUserRepository>();
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +68,7 @@ namespace JordanDeBordProject3
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<GroceryListHub>("/groceryListHub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -10,6 +10,6 @@ namespace JordanDeBordProject3.Services
     {
         Task<ApplicationUser> ReadAsync(string userName);
 
-        Task<ICollection<GroceryList>> ReadAllLists(string userName);
+        Task<ICollection<GroceryList>> ReadAllListsAsync(string userName);
     }
 }

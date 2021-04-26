@@ -161,15 +161,14 @@ namespace JordanDeBordProject3.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GroceryLists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroceryLists_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_GroceryLists_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -203,19 +202,19 @@ namespace JordanDeBordProject3.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Owner = table.Column<bool>(type: "bit", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     GroceryListId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GroceryListUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroceryListUsers_AspNetUsers_ApplicationUserId1",
-                        column: x => x.ApplicationUserId1,
+                        name: "FK_GroceryListUsers_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_GroceryListUsers_GroceryLists_GroceryListId",
                         column: x => x.GroceryListId,
@@ -269,14 +268,14 @@ namespace JordanDeBordProject3.Migrations
                 column: "GroceryListId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroceryLists_UserId",
+                name: "IX_GroceryLists_ApplicationUserId",
                 table: "GroceryLists",
-                column: "UserId");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroceryListUsers_ApplicationUserId1",
+                name: "IX_GroceryListUsers_ApplicationUserId",
                 table: "GroceryListUsers",
-                column: "ApplicationUserId1");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroceryListUsers_GroceryListId",

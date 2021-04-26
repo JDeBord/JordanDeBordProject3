@@ -1,4 +1,7 @@
 ﻿using JordanDeBordProject3.Models;
+using JordanDeBordProject3.Models.ViewModels;
+using JordanDeBordProject3.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,23 +12,35 @@ using System.Threading.Tasks;
 
 namespace JordanDeBordProject3.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserRepository _userRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository)
         {
             _logger = logger;
+            _userRepository = userRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var userName = User.Identity.Name;
 
-        public IActionResult Privacy()
-        {
-            return View();
+            var groceryLists = await _userRepository.ReadAllListsAsync(userName);
+
+            ViewData["Title"] = "Grocery List Home Page";
+            var model = groceryLists.Select(list =>
+                new IndexListVM
+                {
+                    Id = list.Id,
+                    Name = list.Name,
+                    OwnerEmail = list.User.Email,
+                    NumberItems = list.NumberItems
+                });
+           
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

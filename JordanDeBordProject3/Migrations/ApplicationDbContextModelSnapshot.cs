@@ -123,18 +123,15 @@ namespace JordanDeBordProject3.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ApplicationUserId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("GroceryLists");
                 });
@@ -146,18 +143,19 @@ namespace JordanDeBordProject3.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ApplicationUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApplicationUserId1")
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("GroceryListId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Owner")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("GroceryListId");
 
@@ -314,7 +312,7 @@ namespace JordanDeBordProject3.Migrations
                 {
                     b.HasOne("JordanDeBordProject3.Models.Entities.ApplicationUser", "User")
                         .WithMany("GroceryLists")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("ApplicationUserId");
 
                     b.Navigation("User");
                 });
@@ -323,10 +321,12 @@ namespace JordanDeBordProject3.Migrations
                 {
                     b.HasOne("JordanDeBordProject3.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("GroceryListUsers")
-                        .HasForeignKey("ApplicationUserId1");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("JordanDeBordProject3.Models.Entities.GroceryList", "GroceryList")
-                        .WithMany()
+                        .WithMany("GroceryListUsers")
                         .HasForeignKey("GroceryListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -397,6 +397,8 @@ namespace JordanDeBordProject3.Migrations
             modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryList", b =>
                 {
                     b.Navigation("GroceryItems");
+
+                    b.Navigation("GroceryListUsers");
                 });
 #pragma warning restore 612, 618
         }
