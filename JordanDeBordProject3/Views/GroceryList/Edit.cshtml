@@ -1,0 +1,59 @@
+﻿@model JordanDeBordProject3.Models.ViewModels.EditListVM
+
+@{
+    bool owner = (bool)ViewData["Owner"];
+    var ownerName = ViewData["OwnerName"];
+}
+
+<h1>Owner: @ownerName</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @{if (owner)
+            {
+                <partial name="_EditOwner" model="@Model" />
+            }
+            else
+            {
+                <partial name="_EditNonOwner" model="@Model" />
+            }
+        }
+    </div>
+</div>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGroceryItemModal">
+    Add Item
+</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Item Name
+            </th>
+            <th>
+                Quantity to Buy
+            </th>
+            <th></th>
+
+        </tr>
+    </thead>
+    <tbody id="edit-list-@Model.Id">
+
+        @foreach (var item in Model.GroceryItems)
+        {
+            <tr id="edit-row-@item.Id">
+                <partial name="_ItemRow" model="@item" />
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-action="Index" asp-controller="Home">Back Home</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

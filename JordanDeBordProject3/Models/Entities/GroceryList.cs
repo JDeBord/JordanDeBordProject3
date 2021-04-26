@@ -50,5 +50,23 @@ namespace JordanDeBordProject3.Models.Entities
             }
         }
 
+        [NotMapped]
+        public string OwnerName
+        {
+            get 
+            { 
+                var owner = GroceryListUsers.FirstOrDefault(u => u.Owner = true);
+
+                if (owner != null)
+                {
+                    return $"{owner.ApplicationUser.FirstName} {owner.ApplicationUser.LastName}";
+                }
+                else 
+                {
+                    return null;
+                }
+            }
+        }
+
     }
 }

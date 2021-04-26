@@ -1,0 +1,14 @@
+﻿@model GroceryItemVM
+
+<td>
+    @Html.DisplayFor(modelItem => Model.Id)
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.Name)
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.QuantityToBuy)
+</td>
+<td>
+    <a asp-action="RemoveItem" asp-route-id="@Model.Id" class="btn btn-danger btn-sm">Remove</a>
+</td>

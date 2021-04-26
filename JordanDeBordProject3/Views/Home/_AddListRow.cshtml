@@ -16,9 +16,9 @@
         @Html.DisplayFor(modelItem => Model.NumberItems)
     </td>
     <td>
-        <a id="homeShop-@Model.Id" class="btn btn-primary btn-sm">Go Shopping</a> |
-        <a id="homeEdit-@Model.Id" class="btn btn-warning btn-sm">Edit</a> |
+        <a id="homeShop-@Model.Id" asp-controller="GroceryList" asp-action="GoShopping" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">Go Shopping</a> |
+        <a id="homeEdit-@Model.Id" asp-controller="GroceryList" asp-action="Edit" asp-route-id="@Model.Id"class="btn btn-warning btn-sm">Edit</a> |
         <a id="homeDelete-@Model.Id" class="btn btn-danger btn-sm">Delete</a> |
-        <a id="homePerms-@Model.Id" class="btn btn-secondary btn-sm">Permissions</a>
+        <a id="homePerms-@Model.Id" asp-controller="GroceryList" asp-action="Permissions" asp-route-id="@Model.Id"class="btn btn-secondary btn-sm">Permissions</a>
     </td>
 </tr>
