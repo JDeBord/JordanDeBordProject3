@@ -205,7 +205,7 @@ namespace JordanDeBordProject3.Controllers
             {
                 var permission = await _userRepository.CheckPermissionAsync(user.UserName, list);
 
-                // If the user has permission to view the list, return the partial view.
+                // If the user has access to the list, return the partial view.
                 if (permission)
                 {
                     var listToShow = new IndexListVM
