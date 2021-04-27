@@ -3,6 +3,7 @@
 @{
     bool owner = (bool)ViewData["Owner"];
     var ownerName = ViewData["OwnerName"];
+    var listToEdit = new EditListVM { ListName = Model.ListName, Id = Model.Id};
     var groceryItem = new CreateGroceryItemVM { GroceryListId=Model.Id};
 }
 
@@ -16,10 +17,10 @@
 </div>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         @{if (owner)
             {
-                <partial name="_EditOwner" model="@Model" />
+                <partial name="_EditOwner" model="@listToEdit" />
             }
             else
             {
@@ -28,6 +29,7 @@
         }
     </div>
 </div>
+<br />
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createGroceryItemModal">
     Add Item
 </button>
@@ -35,9 +37,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                Id
-            </th>
             <th>
                 Item Name
             </th>
@@ -52,9 +51,7 @@
 
         @foreach (var item in Model.GroceryItems)
         {
-            <tr id="edit-row-@item.Id">
-                <partial name="_ItemRow" model="@item" />
-            </tr>
+            <partial name="_AddItemListRow" model="@item" />
         }
     </tbody>
 </table>

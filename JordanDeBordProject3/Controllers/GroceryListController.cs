@@ -40,14 +40,31 @@ namespace JordanDeBordProject3.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditAjax(EditListVM editListVM) 
+        public async Task<IActionResult> UpdateAjax(EditListVM editListVM) 
         {
+            if (editListVM.ListName == null)
+            {
+                ModelState.AddModelError("ListName", "The List must have a Name between 1 and 50 characters long.");
+                return Json(new { message = "invalid-name" });
+            }
+            else if (editListVM.ListName.Length > 50)
+            {
+                ModelState.AddModelError("ListName", "The List must have a Name between 1 and 50 characters long.");
+                return Json(new { message = "invalid-name" });
+            }
+
             if (ModelState.IsValid) 
             {
                 var list = editListVM.GetGroceryListInstance();
-                await _groceryListRepository.UpdateAsync(list);
 
-                return Json(new { id = list.Id, message = "updated-list" });
+                if (list != null)
+                {
+                    await _groceryListRepository.UpdateAsync(list);
+
+                    return Json(new { id = list.Id, message = "updated-list" });
+                }
+
+                return Json(new { id = list.Id, message = "invalid-list" });
             }
             return Json(ModelState);
         }

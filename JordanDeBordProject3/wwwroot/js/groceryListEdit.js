@@ -44,22 +44,29 @@
         _submitItemWithAjax();
     });
 
-    // If the user submits the new name, submit the change with Ajax.
-    editGroceryListForm.addEventListener('click', (e) => {
-        e.preventDefault();
-        _clearErrorMessages();
-        _updateListNameWithAjax();
-    })
+    // If the owner sends name change update.
+    let btnSave = document.querySelector('#btnSave');
+    if (btnSave != null)
+    {
+        btnSave.addEventListener('click', (e) => {
+            e.preventDefault();
+            let id = $(`#ListIdField`).val();
+            let name = $(`#ListNameField`).val();
+            let list = { id, name };
+
+            _updateListNameWithAjax("/grocerylist/updateAjax", list);
+        })
+    }
 
 
     // AJAX ACTIONS
-    function _updateListNameWithAjax() {
-        const url = createGroceryItemForm.getAttribute('action') + "ajax";
-        const method = createGroceryItemForm.getAttribute('method');
-        const formData = new FormData(createGroceryItemForm);
+    function _updateListNameWithAjax(url, list) {
+        let formData = new FormData();
+        formData.append("Id", list.id);
+        formData.append("ListName", list.name);
 
         fetch(url, {
-            method: method,
+            method: "post",
             body: formData
         })
             .then(response => {
@@ -72,6 +79,15 @@
                 if (result?.message === "updated-list") {
                     _notifyConnectedClients("LIST-UPDATED", result.id);
                     $('#messageArea').html("Grocery List name updated!");
+                    $('#alertArea').show(400);
+                }
+                else if (result?.message === "invalid-list") {
+                    $('#messageArea').html("List no longer exists!");
+                    $('#alertArea').show(400);
+                }
+                else if (result?.message === "invalid-name")
+                {
+                    $('#messageArea').html("Error! The List must have a Name between 1 and 50 characters long!");
                     $('#alertArea').show(400);
                 }
                 else {

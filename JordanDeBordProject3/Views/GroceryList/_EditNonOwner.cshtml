@@ -1,14 +1,9 @@
 ﻿@model EditListVM
-
-<form id="editForm-list-@Model.Id" asp-action="Edit">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <input hidden readonly asp-for="Id" class="form-control" />
-        <span asp-validation-for="Id" class="text-danger"></span>
+<div class="row">
+    <div class="col-md-1">
+        <h3>List:</h3>
     </div>
-    <div class="form-group">
-        <label asp-for="ListName" class="control-label"></label>
-        <input readonly asp-for="ListName" class="form-control" />
-        <span asp-validation-for="ListName" class="text-danger"></span>
+    <div class="col-md-6">
+        <input readonly id="ListName-@Model.Id" value="@Model.ListName" class="form-control" />
     </div>
-</form>
+</div>
