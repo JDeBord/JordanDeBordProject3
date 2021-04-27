@@ -72,6 +72,8 @@ namespace JordanDeBordProject3.Services
 
                 user.GroceryListUsers.Add(userAccess);
 
+                groceryList.OwnerEmail = user.Email;
+
                 await _database.SaveChangesAsync();
             }
 

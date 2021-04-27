@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JordanDeBordProject3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210426150042_Mig01")]
+    [Migration("20210426234618_Mig01")]
     partial class Mig01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,9 @@ namespace JordanDeBordProject3.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerEmail")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

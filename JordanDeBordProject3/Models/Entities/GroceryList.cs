@@ -17,6 +17,8 @@ namespace JordanDeBordProject3.Models.Entities
 
         public List<GroceryListUsers> GroceryListUsers { get; set; } = new List<GroceryListUsers>();
 
+        public string OwnerEmail { get; set; }
+
 
         [NotMapped]
         public int NumberItems 
@@ -28,22 +30,22 @@ namespace JordanDeBordProject3.Models.Entities
         
         }
 
-        [NotMapped]
-        public string OwnerEmail
-        {
-            get 
-            {
-                var owner = GroceryListUsers.FirstOrDefault(u => u.Owner == true);
-                if (owner != null)
-                {
-                    return owner.ApplicationUser.Email;
-                }
-                else 
-                {
-                    return null;
-                }
-            }
-        }
+        //[NotMapped]
+        //public string OwnerEmail
+        //{
+        //    get 
+        //    {
+        //        var owner = GroceryListUsers.FirstOrDefault(u => u.Owner == true);
+        //        if (owner != null)
+        //        {
+        //            return owner.ApplicationUser.Email;
+        //        }
+        //        else 
+        //        {
+        //            return null;
+        //        }
+        //    }
+        //}
 
         [NotMapped]
         public string OwnerName

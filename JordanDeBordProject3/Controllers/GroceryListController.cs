@@ -78,7 +78,7 @@ namespace JordanDeBordProject3.Controllers
 
                 if (result != null)
                 {
-                    return Json(new { id = result, message = "granted-permission"});
+                    return Json(new { id = result, message = "granted-permission", listId=list.Id});
                 }
                 else 
                 {

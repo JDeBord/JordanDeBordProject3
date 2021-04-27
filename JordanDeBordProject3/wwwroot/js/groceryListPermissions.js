@@ -16,7 +16,7 @@
 
         }
         else if (incoming.type === "PERMISSION-GRANTED") {
-            _updatePermTable(incoming.data);
+            
         }
     });
 
@@ -59,9 +59,10 @@
             .then(result => {
                 if (result?.message === "granted-permission") {
                     $('#createGroceryListModal').modal('hide');
-                    _notifyConnectedClients("PERMISSION-GRANTED", result.id );
+                    _notifyConnectedClientsTwoParts("PERMISSION-GRANTED", result.id, result.listId );
                     $('#messageArea').html("A user was granted access!");
                     $('#alertArea').show(400);
+                    location.reload();
                 }
                 else if (result?.message === "invalid-permission") {
                     $('#createGroceryListModal').modal('hide');
@@ -78,22 +79,6 @@
     }
 
     // OTHER METHODS/FUNCTIONS
-
-    function _updatePermTable(permissionId) {
-        fetch(`/grocerylist/permissionrow/${permissionId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('There was a network error!');
-                }
-                return response.text();
-            })
-            .then(result => {
-                $('#table-home-index').append(result);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
 
 
     // Function to clear error messages.
