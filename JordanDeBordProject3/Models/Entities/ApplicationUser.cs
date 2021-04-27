@@ -13,6 +13,6 @@ namespace JordanDeBordProject3.Models.Entities
 
         public string LastName { get; set; }
 
-        public ICollection<GroceryListUsers> GroceryListUsers { get; set; } = new List<GroceryListUsers>();
+        public ICollection<GroceryListUser> GroceryListUsers { get; set; } = new List<GroceryListUser>();
     }
 }

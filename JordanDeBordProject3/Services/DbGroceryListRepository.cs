@@ -38,19 +38,24 @@ namespace JordanDeBordProject3.Services
 
             if (user != null && list != null)
             {
-                var userAccess = new GroceryListUsers
+                var listAccess = await _database.GroceryListUsers.FirstOrDefaultAsync(u => u.GroceryListId == list.Id && u.ApplicationUserId == user.Id);
+
+                if (listAccess == null)
                 {
-                    ApplicationUser = user,
-                    GroceryList = list,
-                    Owner = false
-                };
+                    var userAccess = new GroceryListUser
+                    {
+                        ApplicationUser = user,
+                        GroceryList = list,
+                        Owner = false
+                    };
 
-                user.GroceryListUsers.Add(userAccess);
-                list.GroceryListUsers.Add(userAccess);
+                    user.GroceryListUsers.Add(userAccess);
+                    list.GroceryListUsers.Add(userAccess);
 
-                await _database.SaveChangesAsync();
+                    await _database.SaveChangesAsync();
 
-                return userAccess.Id;
+                    return userAccess.Id;
+                }
             }
             return null;
         }
@@ -61,7 +66,7 @@ namespace JordanDeBordProject3.Services
 
             if (user != null) 
             {
-                var userAccess = new GroceryListUsers
+                var userAccess = new GroceryListUser
                 {
                     ApplicationUser = user,
                     GroceryList = groceryList,
@@ -105,9 +110,18 @@ namespace JordanDeBordProject3.Services
             throw new NotImplementedException();
         }
 
-        public async Task RemoveUserAsync(int id, string userId)
+        public async Task<bool> RemoveUserAsync(int userAccessId)
         {
-            throw new NotImplementedException();
+            var userAccess = await _database.GroceryListUsers.FirstOrDefaultAsync(u => u.Id == userAccessId);
+
+            if (userAccess != null) 
+            {
+                _database.GroceryListUsers.Remove(userAccess);
+
+                await _database.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task UpdateAsync(GroceryList groceryList)
@@ -129,11 +143,11 @@ namespace JordanDeBordProject3.Services
             return item;
         }
 
-        public async Task<ICollection<GroceryListUsers>> GetAdditionalUsersAsync(int id) 
+        public async Task<ICollection<GroceryListUser>> GetAdditionalUsersAsync(int id) 
         {
             // var list = await ReadAsync(id);
             var userAccess = await _database.GroceryListUsers.Include(l => l.GroceryList).Include(u => u.ApplicationUser).Where(li => li.GroceryListId == id).ToListAsync();
-            var additionalUsers = new List<GroceryListUsers>();
+            var additionalUsers = new List<GroceryListUser>();
 
             foreach (var u in userAccess)
             {
@@ -145,7 +159,7 @@ namespace JordanDeBordProject3.Services
             return additionalUsers;
         }
 
-        public async Task<GroceryListUsers> GetPermissionAsync(int id) 
+        public async Task<GroceryListUser> GetPermissionAsync(int id) 
         {
             var access = await _database.GroceryListUsers
                 .Include(u => u.ApplicationUser)

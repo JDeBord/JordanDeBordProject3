@@ -18,7 +18,7 @@ namespace JordanDeBordProject3.Services
 
         Task<int?> GrantPermissionAsync(int listId, string email);
 
-        Task RemoveUserAsync(int id, string userId);
+        Task<bool> RemoveUserAsync(int accessId);
 
         Task<GroceryItem> AddItemAsync(int groceryListId, GroceryItem item);
 
@@ -26,9 +26,9 @@ namespace JordanDeBordProject3.Services
 
         Task<GroceryItem> GetItemAsync(int itemId);
 
-        Task<ICollection<GroceryListUsers>> GetAdditionalUsersAsync(int id);
+        Task<ICollection<GroceryListUser>> GetAdditionalUsersAsync(int id);
 
-        Task<GroceryListUsers> GetPermissionAsync(int id);
+        Task<GroceryListUser> GetPermissionAsync(int id);
 
         Task<string> GetOwnerAsync(int id);
     }

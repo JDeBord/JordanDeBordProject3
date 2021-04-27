@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JordanDeBordProject3.Models.Entities
 {
-    public class GroceryListUsers
+    public class GroceryListUser
     {
         public int Id { get; set; }
 

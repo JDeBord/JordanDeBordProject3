@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JordanDeBordProject3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210426234618_Mig01")]
+    [Migration("20210427113221_Mig01")]
     partial class Mig01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,7 +136,7 @@ namespace JordanDeBordProject3.Migrations
                     b.ToTable("GroceryLists");
                 });
 
-            modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryListUsers", b =>
+            modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryListUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -308,7 +308,7 @@ namespace JordanDeBordProject3.Migrations
                     b.Navigation("GroceryList");
                 });
 
-            modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryListUsers", b =>
+            modelBuilder.Entity("JordanDeBordProject3.Models.Entities.GroceryListUser", b =>
                 {
                     b.HasOne("JordanDeBordProject3.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("GroceryListUsers")

@@ -18,6 +18,6 @@ namespace JordanDeBordProject3.Services
 
         public DbSet<GroceryItem> GroceryItems { get; set; }
 
-        public DbSet<GroceryListUsers> GroceryListUsers { get; set; }
+        public DbSet<GroceryListUser> GroceryListUsers { get; set; }
     }
 }

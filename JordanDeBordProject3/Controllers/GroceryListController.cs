@@ -88,6 +88,27 @@ namespace JordanDeBordProject3.Controllers
             return Json(ModelState);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RevokeAccessAjax(int id)
+        {
+            var permission = await _groceryListRepository.GetPermissionAsync(id);
+            if (permission != null)
+            {
+                var userId = permission.ApplicationUserId;
+                var listId = permission.GroceryListId;
+
+                var result = await _groceryListRepository.RemoveUserAsync(id);
+
+                if (result)
+                {
+                    return Json(new { id = listId, message = "access-revoked", userId});
+                }
+                // If we can not revoke that user (owner)
+                return Json(new { id, message = "revoke-declined" });
+            }
+            return Json(new { id, message="no-access" });
+        }
+
         public async Task<IActionResult> ListRow(int id)
         {
             var user = await _userRepository.ReadAsync(User.Identity.Name);

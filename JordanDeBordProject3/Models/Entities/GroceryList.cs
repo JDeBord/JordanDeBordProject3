@@ -15,7 +15,7 @@ namespace JordanDeBordProject3.Models.Entities
 
         public List<GroceryItem> GroceryItems { get; set; } = new List<GroceryItem>();
 
-        public List<GroceryListUsers> GroceryListUsers { get; set; } = new List<GroceryListUsers>();
+        public List<GroceryListUser> GroceryListUsers { get; set; } = new List<GroceryListUser>();
 
         public string OwnerEmail { get; set; }
 
