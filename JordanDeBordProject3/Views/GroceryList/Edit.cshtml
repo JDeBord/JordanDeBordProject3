@@ -16,7 +16,7 @@
     </button>
 </div>
 
-<div class="row">
+<div id="permission-@Model.GroceryListUserId" class="row">
     <div class="col-md-12">
         @{if (owner)
             {
@@ -34,6 +34,7 @@
     Add Item
 </button>
 <partial name="_AddGroceryItemModal" model="@groceryItem" />
+<br />
 <table class="table">
     <thead>
         <tr>

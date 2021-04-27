@@ -11,6 +11,8 @@ namespace JordanDeBordProject3.Models.ViewModels
     {
         public int Id { get; set; }
 
+        public int GroceryListUserId { get; set; }
+
         [Display(Name = "Grocery List Name")]
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 1)]
         public string ListName { get; set; }

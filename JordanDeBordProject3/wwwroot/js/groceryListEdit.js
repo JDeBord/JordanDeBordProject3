@@ -8,22 +8,22 @@
     // Notification event listener.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
+        console.log(incoming)
 
-        // Log message
-        console.log(incoming);
-
-        if (incoming.type === "LIST-CREATED") {
-
+        if (incoming.type === "ACCESS-REVOKED") {
+            let access = $(`#permission-${incoming.data}`);
+            if (access.length > 0) {
+                location.reload();
+            }
         }
         else if (incoming.type === "ITEM-ADDED") {
-            _updateGroceryListTable(incoming.data, incoming.otherId);
+            _updateGroceryListTable(incoming.data, incoming.data2);
         }
         else if (incoming.type === "LIST-UPDATED") {
-
+            _updateListName(incoming.data, incoming.data2);
         }
-
         else if (incoming.type === "ITEM-REMOVED") {
-            _removeItemRow(incoming.data, incoming.otherId);
+            _removeItemRow(incoming.data, incoming.data2);
         }
     });
 
@@ -87,7 +87,7 @@
         })
             .then(result => {
                 if (result?.message === "updated-list") {
-                    _notifyConnectedClients("LIST-UPDATED", result.id);
+                    _notifyConnectedClientsTwoParts("LIST-UPDATED", result.id, result.name);
                     $('#messageArea').html("Grocery List name updated!");
                     $('#alertArea').show(400);
                 }
@@ -171,6 +171,17 @@
     }
 
     // OTHER METHODS/FUNCTIONS
+
+    //function _updateListName(listId, newName) {
+    //    $(`#listName-${listId}`).value(newName);
+    //}
+    function _updateListName(listId, newName) {
+        let data = $(`#ListName-${listId}`);
+        if (data.length > 0) {
+            //location.reload();
+            $(`#ListName-${listId}`).val(newName);
+        }
+    }
 
     function _updateGroceryListTable(itemId, listId) {
         fetch(`/grocerylist/listitemrow/${itemId}`)
@@ -259,9 +270,9 @@
             });
     }
 
-    function _notifyConnectedClientsTwoParts(type, data, otherId) {
+    function _notifyConnectedClientsTwoParts(type, data, data2) {
         let message = {
-            type, data, otherId
+            type, data, data2
         };
         console.log(JSON.stringify(message));
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))

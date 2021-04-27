@@ -107,11 +107,11 @@ namespace JordanDeBordProject3.Services
 
         public async Task<bool> RemoveItemAsync(int groceryListId, int groceryItemId)
         {
-            var list = await ReadAsync(groceryItemId);
+            var list = await ReadAsync(groceryListId);
 
             var item = await GetItemAsync(groceryItemId);
 
-            if (list == null || item == null) 
+            if (list != null && item != null) 
             {
                 _database.GroceryItems.Remove(item);
 

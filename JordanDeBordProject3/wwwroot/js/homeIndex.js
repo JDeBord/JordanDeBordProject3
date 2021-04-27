@@ -8,12 +8,23 @@
     // Notification event listener.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
-
-        // Log message
-        console.log(incoming);
+        console.log(incoming)
 
         if (incoming.type === "LIST-CREATED") {
             _updateListTable(incoming.data);
+        }
+        else if (incoming.type === "ACCESS-GRANTED") {
+            _updateListTable(incoming.otherId);
+        }
+        else if (incoming.type === "ACCESS-REVOKED") {
+
+        }
+        else if (incoming.type === "LIST-UPDATED") {
+
+        }
+        else if (incoming.type === "ITEM-REMOVED" || incoming.type === "ITEM-ADDED")
+        {
+
         }
     });
 

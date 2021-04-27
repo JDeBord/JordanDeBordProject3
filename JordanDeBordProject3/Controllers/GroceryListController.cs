@@ -61,7 +61,7 @@ namespace JordanDeBordProject3.Controllers
                 {
                     await _groceryListRepository.UpdateAsync(list);
 
-                    return Json(new { id = list.Id, message = "updated-list" });
+                    return Json(new { id = list.Id, message = "updated-list", name=$"{list.Name}" });
                 }
 
                 return Json(new { id = list.Id, message = "invalid-list" });
@@ -95,7 +95,7 @@ namespace JordanDeBordProject3.Controllers
 
                 if (result)
                 {
-                    return Json(new { id = id, message = "item-removed", listId = id });
+                    return Json(new { id = id, message = "item-removed", listId = listId });
                 }
             }
             return Json(new { id, message = "not-valid" });
@@ -136,7 +136,7 @@ namespace JordanDeBordProject3.Controllers
 
                 if (result)
                 {
-                    return Json(new { id = listId, message = "access-revoked", userId});
+                    return Json(new { id, message = "access-revoked"});
                 }
                 // If we can not revoke that user (owner)
                 return Json(new { id, message = "revoke-declined" });
@@ -191,6 +191,29 @@ namespace JordanDeBordProject3.Controllers
                     QuantityToBuy = item.QuantityToBuy
                 };
                 return PartialView("Views/GroceryList/_UpdateShoppingItem.cshtml", itemModel);
+            }
+
+            return Ok();
+        }
+
+        public async Task<IActionResult> AddShopRow(int id, int listId)
+        {
+            var item = await _groceryListRepository.GetItemAsync(id);
+            var list = await _groceryListRepository.ReadAsync(listId);
+            if (item != null && list != null)
+            {
+                if (!list.GroceryItems.Contains(item))
+                {
+                    return Ok();
+                }
+                var itemModel = new GoShoppingItemVM
+                {
+                    Id = item.Id,
+                    Shopped = item.Shopped,
+                    Name = item.Name,
+                    QuantityToBuy = item.QuantityToBuy
+                };
+                return PartialView("Views/GroceryList/_AddShoppingItem.cshtml", itemModel);
             }
 
             return Ok();
@@ -338,7 +361,7 @@ namespace JordanDeBordProject3.Controllers
             {
                 return Forbid();
             }
-
+            var permission = await _groceryListRepository.GetPermissionAsync(list.Id, user.Id);
             // Get list of all items from the list, build VM and pass.
             var items = list.GroceryItems.ToList();
             var itemModel = items.Select(item =>
@@ -352,6 +375,7 @@ namespace JordanDeBordProject3.Controllers
             var model = new EditListVM
             {
                 Id = list.Id,
+                GroceryListUserId = permission.Id,
                 ListName = list.Name,
                 GroceryItems = itemModel.ToList()
             };

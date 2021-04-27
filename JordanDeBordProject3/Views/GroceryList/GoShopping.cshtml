@@ -1,10 +1,10 @@
 ﻿@model JordanDeBordProject3.Models.ViewModels.GoShoppingListVM
 
 
-<h1>@Model.Name</h1>
+<h1 id="shop-title-@Model.Id">@Model.Name</h1>
 
-<table id="permission-@Model.GroceryListUserId"class="table">
-    <tbody>
+<table id="shop-table-@Model.Id"class="table">
+    <tbody id="permission-@Model.GroceryListUserId">
         @foreach (var item in Model.GroceryItems)
         {
             <partial name="_AddShoppingItem" model="@item" />

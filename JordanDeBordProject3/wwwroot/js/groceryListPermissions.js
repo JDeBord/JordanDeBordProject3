@@ -9,15 +9,13 @@
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
 
-        // Log message
-        console.log(incoming);
-
-        if (incoming.type === "LIST-CREATED") {
-
-        }
-        else if (incoming.type === "PERMISSION-GRANTED") {
+        if (incoming.type === "PERMISSION-GRANTED") {
             
         }
+        else if (incoming.type === "ACCESS-REVOKED") {
+
+        }
+
     });
 
     // Start connection and catch errors.
@@ -100,7 +98,7 @@
             .then(result => {
                 if (result?.message === "access-revoked") {
                     console.log('Success: the user access was revoked');
-                    _notifyConnectedClientsTwoParts("ACCESS-REVOKED", result.id, result.userId);
+                    _notifyConnectedClients("ACCESS-REVOKED", result.id);
                     location.reload();
                 }
                 else if (result?.message === "no-access") {
@@ -182,9 +180,9 @@
                 return console.error(err.toString());
             });
     }
-    function _notifyConnectedClientsTwoParts(type, data, otherId) {
+    function _notifyConnectedClientsTwoParts(type, data, data2) {
         let message = {
-            type, data, otherId
+            type, data, data2
         };
         console.log(JSON.stringify(message));
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))

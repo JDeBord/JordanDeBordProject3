@@ -8,14 +8,31 @@
     // Notification event listener.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
+        console.log(incoming)
 
         if (incoming.type === "ITEM-CHECKED") {
             _updateCheckedRow(incoming.data);
         }
-        else if (incoming.type === "ITEM-UNCHECKED")
-        {
+        else if (incoming.type === "ITEM-UNCHECKED") {
             _updateCheckedRow(incoming.data);
         }
+        else if (incoming.type === "ACCESS-REVOKED") {
+            let access = $(`#permission-${incoming.data}`);
+            if (access.length > 0)
+            {
+                location.reload();
+            }
+        }
+        else if (incoming.type === "LIST-UPDATED") {
+            _updateListName(incoming.data, incoming.data2);
+        }
+        else if (incoming.type === "ITEM-ADDED") {
+            _updateShoppingTable(incoming.data, incoming.data2);
+        }
+        else if (incoming.type === "ITEM-REMOVED") {
+            _removeShoppingRow(incoming.data)
+        }
+
     });
 
     // Start connection and catch errors.
@@ -101,6 +118,11 @@
     }
 
     // OTHER METHODS/FUNCTIONS
+
+    function _updateListName(listId, newName) {
+        $(`#shop-title-${listId}`).html(newName);
+    }
+
     function _updateCheckedRow(id) {
         fetch(`/grocerylist/shoprow/${id}`)
             .then(response => {
@@ -114,12 +136,8 @@
                 if (row != null)
                 {
                     $(`#shop-row-${id}`).html(result);
-                    //$(`#shop-row-${id}`).hide(400, () => {
-                    //    $(`#shop-row-${id}`).html(result);
-                    //    $(`#shop-row-${id}`).show(400);
-                    //});
-                    $(`input[type=checkbox]`).off();
                     // Reset event listener
+                    $(`input[type=checkbox]`).off();
                     $(`input[type=checkbox]`).change(function () {
                         let $box = $(this); // Get the checkbox
                         let boxId = $box.attr('id');
@@ -142,6 +160,52 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+    }
+
+    function _updateShoppingTable(rowId, listId) {
+        fetch(`/grocerylist/addshoprow/${rowId}/${listId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('There was a network error!');
+                }
+                return response.text();
+            })
+            .then(result => {
+                if (result != "")
+                {
+                    $(`#shop-table-${listId}`).append(result);
+                    // Reset event listener
+                    $(`input[type=checkbox]`).off();
+                    $(`input[type=checkbox]`).change(function () {
+                        let $box = $(this); // Get the checkbox
+                        let boxId = $box.attr('id');
+                        let idx = boxId.lastIndexOf('-');
+                        let id = boxId.substring(idx + 1);
+                        if (this.checked) {
+                            // If checked, send check
+                            _sendCheckWithAjax("/grocerylist/checkAjax", id);
+
+                        }
+                        else {
+                            // if unchecked, send uncheck
+                            _sendUnCheckWithAjax("/grocerylist/uncheckAjax", id);
+                        }
+                    })
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function _removeShoppingRow(itemId) {
+        let rowToDelete = document.querySelector(`#shop-row-${itemId}`);
+
+        if (rowToDelete != null) {
+            $(`#shop-row-${itemId}`).hide(400, () => {
+                rowToDelete.replaceWith("");
+            })
+        }
     }
 
 
