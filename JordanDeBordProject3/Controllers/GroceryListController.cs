@@ -239,8 +239,10 @@ namespace JordanDeBordProject3.Controllers
                 owner = true;
             }
             // set title
+
+            var ownerName = await _userRepository.GetNameAsync(ownerEmail);
             ViewData["Title"] = $"Editing {list.Name}";
-            ViewData["OwnerName"] = $"{list.OwnerName}";
+            ViewData["OwnerName"] = ownerName;
             ViewData["Owner"] = owner;
             
             return View(model);

@@ -59,5 +59,13 @@ namespace JordanDeBordProject3.Services
 
             return user;
         }
+
+        public async Task<string> GetNameAsync(string email)
+        {
+            var user = await _database.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var name = $"{user.FirstName} {user.LastName}";
+
+            return name;
+        }
     }
 }
