@@ -9,9 +9,6 @@
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
 
-        // Log message
-        console.log(incoming);
-
         if (incoming.type === "ITEM-CHECKED") {
             _updateCheckedRow(incoming.data);
         }
@@ -27,6 +24,7 @@
     });
 
     // EVENT LISTENERS FROM PAGE.
+
     $("input[type=checkbox]").change(function () {
         let $box = $(this); // Get the checkbox
         let boxId = $box.attr('id');
@@ -35,7 +33,6 @@
         if (this.checked) {
             // If checked, send check
             _sendCheckWithAjax("/grocerylist/checkAjax", id);
-            console.log(id);
         }
         else {
             // if unchecked, send uncheck
@@ -116,10 +113,30 @@
                 let row = $(`#shop-row-${id}`);
                 if (row != null)
                 {
-                    $(`#shop-row-${id}`).hide(400, () => {
-                        $(`#shop-row-${id}`).html(result);
-                        $(`#shop-row-${id}`).show(400);
+                    $(`#shop-row-${id}`).html(result);
+                    //$(`#shop-row-${id}`).hide(400, () => {
+                    //    $(`#shop-row-${id}`).html(result);
+                    //    $(`#shop-row-${id}`).show(400);
+                    //});
+                    $(`input[type=checkbox]`).off();
+                    // Reset event listener
+                    $(`input[type=checkbox]`).change(function () {
+                        let $box = $(this); // Get the checkbox
+                        let boxId = $box.attr('id');
+                        let idx = boxId.lastIndexOf('-');
+                        let id = boxId.substring(idx + 1);
+                        if (this.checked) {
+                            // If checked, send check
+                            _sendCheckWithAjax("/grocerylist/checkAjax", id);
+
+                        }
+                        else {
+                            // if unchecked, send uncheck
+                            _sendUnCheckWithAjax("/grocerylist/uncheckAjax", id);
+                        }
                     })
+
+                    
                 }
             })
             .catch(error => {
