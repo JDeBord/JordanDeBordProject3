@@ -22,7 +22,7 @@ namespace JordanDeBordProject3.Services
 
         Task<GroceryItem> AddItemAsync(int groceryListId, GroceryItem item);
 
-        Task RemoveItemAsync(int groceryListId, int groceryItemId);
+        Task<bool> RemoveItemAsync(int groceryListId, int groceryItemId);
 
         Task<GroceryItem> GetItemAsync(int itemId);
 
@@ -30,6 +30,10 @@ namespace JordanDeBordProject3.Services
 
         Task<GroceryListUser> GetPermissionAsync(int id);
 
+        Task<GroceryListUser> GetPermissionAsync(int listId, string userId);
+
         Task<string> GetOwnerAsync(int id);
+
+        Task<bool> UpdateStatusAsync(GroceryItem item);
     }
 }

@@ -1,0 +1,29 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model GoShoppingItemVM
+
+<td class="col-1">
+    @if (Model.Shopped)
+    {
+        <input id="shop-@Model.Id" checked="checked" class="checkInput" type="checkbox" />
+    }
+    else
+    {
+        <input id="shop-@Model.Id" type="checkbox" class="checkInput" />
+    }
+
+</td>
+<td class="col-4">
+    @if (Model.Shopped)
+    {
+        <strike>@Model.Name</strike>
+    }
+    else
+    {
+        @Html.DisplayFor(modelItem => Model.Name)
+    }
+</td>
+<td class="col-3">
+    @Html.DisplayFor(modelItem => Model.QuantityToBuy)
+</td>

@@ -99,7 +99,7 @@
             })
             .then(result => {
                 if (result?.message === "access-revoked") {
-                    console.log('Success: the quote was deleted');
+                    console.log('Success: the user access was revoked');
                     _notifyConnectedClientsTwoParts("ACCESS-REVOKED", result.id, result.userId);
                     location.reload();
                 }
@@ -118,7 +118,7 @@
             .catch(error => {
                 console.error('Error:', error);
             });
-                }
+    }
            
 
     // OTHER METHODS/FUNCTIONS

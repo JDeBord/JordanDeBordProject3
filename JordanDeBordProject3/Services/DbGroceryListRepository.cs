@@ -105,9 +105,22 @@ namespace JordanDeBordProject3.Services
             return list;
         }
 
-        public Task RemoveItemAsync(int groceryListId, int groceryItemId)
+        public async Task<bool> RemoveItemAsync(int groceryListId, int groceryItemId)
         {
-            throw new NotImplementedException();
+            var list = await ReadAsync(groceryItemId);
+
+            var item = await GetItemAsync(groceryItemId);
+
+            if (list == null || item == null) 
+            {
+                _database.GroceryItems.Remove(item);
+
+                await _database.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<bool> RemoveUserAsync(int userAccessId)
@@ -169,11 +182,37 @@ namespace JordanDeBordProject3.Services
             return access;
         }
 
+        public async Task<GroceryListUser> GetPermissionAsync(int listId, string userId) 
+        { 
+            var permission = await _database.GroceryListUsers
+                .Include(u => u.ApplicationUser)
+                .Include(li => li.GroceryList)
+                .FirstOrDefaultAsync(l => l.ApplicationUserId == userId && l.GroceryListId == listId);
+
+            return permission;
+        }
+
         public async Task<string> GetOwnerAsync(int id) 
         {
             var owner = await _database.GroceryListUsers.Where(u => u.Owner == true).FirstOrDefaultAsync(l => l.GroceryListId == id);
 
             return owner.ApplicationUser.Email;
+        }
+
+        public async Task<bool> UpdateStatusAsync(GroceryItem item)
+        {
+            var itemToUpdate = await GetItemAsync(item.Id);
+
+            if (item != null) 
+            {
+                itemToUpdate.Shopped = item.Shopped;
+
+                await _database.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

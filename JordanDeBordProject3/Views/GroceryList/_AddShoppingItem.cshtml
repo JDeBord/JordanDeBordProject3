@@ -1,0 +1,30 @@
+﻿@*
+    Partial view for the go shopping page.
+*@
+@model GoShoppingItemVM 
+<tr id="shop-row-@Model.Id" class="row">
+    <td class="col-1">
+        @if (Model.Shopped)
+        {
+            <input id="shop-@Model.Id" checked="checked" class="checkInput" type="checkbox" />
+        }
+        else
+        {
+            <input id="shop-@Model.Id" type="checkbox" class="checkInput" />
+        }
+
+    </td>
+    <td class="col-4">
+        @if (Model.Shopped)
+        {
+            <strike>@Model.Name</strike>
+        }
+        else
+        {
+            @Html.DisplayFor(modelItem => Model.Name)
+        }
+    </td>
+    <td class="col-3">
+        @Html.DisplayFor(modelItem => Model.QuantityToBuy)
+    </td>
+</tr>

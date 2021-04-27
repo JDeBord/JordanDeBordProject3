@@ -83,6 +83,24 @@ namespace JordanDeBordProject3.Controllers
             return Json(ModelState);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveItemAjax(int id) 
+        {
+            var item = await _groceryListRepository.GetItemAsync(id);
+            if (item != null)
+            {
+                var listId = item.GroceryListId;
+
+                var result = await _groceryListRepository.RemoveItemAsync(listId, item.Id);
+
+                if (result)
+                {
+                    return Json(new { id = id, message = "item-removed", listId = id });
+                }
+            }
+            return Json(new { id, message = "not-valid" });
+        }
+
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> GrantPermissionAjax(GrantPermissionsUserVM grantPermissionsUserVM) 
         {
@@ -124,6 +142,58 @@ namespace JordanDeBordProject3.Controllers
                 return Json(new { id, message = "revoke-declined" });
             }
             return Json(new { id, message="no-access" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckAjax(GoShoppingItemVM itemVM) 
+        {
+            var item = await _groceryListRepository.GetItemAsync(itemVM.Id);
+
+            if (item != null)
+            {
+                var result = await _groceryListRepository.UpdateStatusAsync(itemVM.GetItemInstance());
+
+                if (result)
+                {
+                    return Json(new { id = item.Id, message = "checked"});
+                }
+            }
+            return Json(new { id = itemVM.Id, message = "no-item" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UncheckAjax(GoShoppingItemVM itemVM) 
+        {
+            var item = await _groceryListRepository.GetItemAsync(itemVM.Id);
+
+            if (item != null)
+            {
+                var result = await _groceryListRepository.UpdateStatusAsync(itemVM.GetItemInstance());
+
+                if (result)
+                {
+                    return Json(new { id = item.Id, message = "unchecked" });
+                }
+            }
+            return Json(new { id = itemVM.Id, message = "no-item" });
+        }
+
+        public async Task<IActionResult> ShopRow(int id)
+        {
+            var item = await _groceryListRepository.GetItemAsync(id);
+            if (item != null) 
+            {
+                var itemModel = new GoShoppingItemVM
+                {
+                    Id = item.Id,
+                    Shopped = item.Shopped,
+                    Name = item.Name,
+                    QuantityToBuy = item.QuantityToBuy
+                };
+                return PartialView("Views/GroceryList/_UpdateShoppingItem.cshtml", itemModel);
+            }
+
+            return Ok();
         }
 
         public async Task<IActionResult> ListRow(int id)
@@ -226,12 +296,29 @@ namespace JordanDeBordProject3.Controllers
             {
                 return Forbid();
             }
-
-            // Set Title
+            var permission = await _groceryListRepository.GetPermissionAsync(list.Id, user.Id);
 
             // Get list of all items in list, and build a VM then pass to view.
+            var itemModel = list.GroceryItems.Select(i=>
+                new GoShoppingItemVM 
+                { 
+                    Id = i.Id,
+                    Shopped = i.Shopped,
+                    Name = i.Name,
+                    QuantityToBuy = i.QuantityToBuy
+                }).ToList();
 
-            return View();
+            var model = new GoShoppingListVM
+            {
+                Id = list.Id,
+                Name = list.Name,
+                GroceryItems = itemModel,
+                GroceryListUserId = permission.Id
+            };
+            
+            // Set Title 
+            ViewData["Title"] = "Shopping";
+            return View(model);
         }
         
         public async Task<IActionResult> Edit(int id) 

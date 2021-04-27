@@ -21,6 +21,10 @@
         else if (incoming.type === "LIST-UPDATED") {
 
         }
+
+        else if (incoming.type === "ITEM-REMOVED") {
+            _removeItemRow(incoming.data, incoming.otherId);
+        }
     });
 
     // Start connection and catch errors.
@@ -28,9 +32,11 @@
         return console.error(err.toString());
     });
 
+    _setupPopovers();
+
     // EVENT LISTENERS FROM PAGE.
     const createGroceryItemForm = document.querySelector("#createGroceryItemForm");
-    const editGroceryListForm = document.querySelector("#editGroceryListForm");
+
 
     // If the user clicks the close button on the alert area, hide it.
     $('#alertCloseBtn').on('click', function _hideAlert() {
@@ -57,6 +63,10 @@
             _updateListNameWithAjax("/grocerylist/updateAjax", list);
         })
     }
+
+    $(document).on('click', '.removeAjax', (e) => {
+        e.preventDefault();
+    });
 
 
     // AJAX ACTIONS
@@ -130,6 +140,36 @@
             })
     }
 
+    function _sendRemoveItemAjax(url, id) {
+        fetch(url, {
+            method: "post",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${id}`
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('There was a network error!');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result?.message === "item-removed") {
+                    console.log('Success: the item was removed');
+                    _notifyConnectedClientsTwoParts("ITEM-REMOVED", result.id, result.listId);
+                }
+                else if (result?.message === "not-valid") {
+                    $('#messageArea').html("The Item or List no longer exists!");
+                    $('#alertArea').show(400);
+                }
+                else {
+                    _reportErrors(result);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     // OTHER METHODS/FUNCTIONS
 
     function _updateGroceryListTable(itemId, listId) {
@@ -142,10 +182,22 @@
             })
             .then(result => {
                 $(`#edit-list-${listId}`).append(result);
+                _setupPopovers();
             })
             .catch(error => {
                 console.error('Error:', error);
             });
+    }
+
+    function _removeItemRow(rowId, listId) {
+        let rowToDelete = document.querySelector(`#edit-row-${rowId}`);
+
+        if (rowToDelete != null)
+        {
+            $(`#edit-row-${rowId}`).hide(400, () => {
+                rowToDelete.replaceWith("");
+            })
+        }
     }
 
 
@@ -170,6 +222,29 @@
                 }
             }
         }
+    }
+
+    // Function to set up popovers
+    function _setupPopovers() {
+        $('[data-toggle="popover"]').popover();
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        });
+
+        $('[data-toggle="popover"]').on('inserted.bs.popover', function _onPopoverInserted() {
+            let $a = $(this);
+            let url = $a.attr('href');
+            let idx = url.lastIndexOf('/');
+            let id = url.substring(idx + 1);
+            url = url.substring(0, idx);
+            let btnYesId = "btnYes-" + id;
+            $('.popover-body').html(`<button id="${btnYesId}">Yes</button><button>No</button>`);
+            $(`#${btnYesId}`).on('click', function _onYes() {
+                console.log(url);
+                console.log(id);
+                _sendRemoveItemAjax(url, id);
+            });
+        });
     }
 
     // Function to send notification to clients. 
