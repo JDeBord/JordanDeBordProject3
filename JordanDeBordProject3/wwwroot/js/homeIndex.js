@@ -19,7 +19,7 @@
             if (!(rowInfo.length > 0)) {
                 _updateTablePermission(incoming.data, incoming.data2);
             }
-            
+
         }
         else if (incoming.type === "ACCESS-REVOKED") {
             _removeRow(incoming.data);
@@ -27,9 +27,12 @@
         else if (incoming.type === "LIST-DELETED") {
             _removeRowOnDelete(incoming.data);
         }
-        else if (incoming.type === "ITEM-REMOVED" || incoming.type === "ITEM-ADDED" || incoming.type === "LIST-UPDATED")
+        else if (incoming.type === "ITEM-REMOVED" || incoming.type === "ITEM-ADDED") {
+            _updateRow(incoming.data2);
+        }
+        else if (incoming.type === "LIST-UPDATED")
         {
-
+            _updateRow(incoming.data);
         }
     });
 
@@ -119,6 +122,8 @@
                 if (result?.message === "deleted") {
                     console.log('Success: the item was removed');
                     _notifyConnectedClients("LIST-DELETED", result.id);
+                    $('#messageArea').html("The list has been deleted!");
+                    $('#alertArea').show(400);
                 }
                 else if (result?.message === "not-owner") {
                     $('#messageArea').html("Only the owner can delete the list!");
@@ -171,7 +176,25 @@
         }
     }
 
-    // Function to add grocery list to index page.
+    // Update the row if the name changes or item count changes.
+    function _updateRow(listId) {
+        fetch(`/grocerylist/updatelistrow/${listId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('There was a network error!');
+                }
+                return response.text();
+            })
+            .then(result => {
+                $(`.index-row-list-${listId}`).first().html(result);
+                _setupPopovers();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Function to update the home index after name change or item count change.
     function _updateListTable(listId) {
         fetch(`/grocerylist/listrow/${listId}`)
             .then(response => {

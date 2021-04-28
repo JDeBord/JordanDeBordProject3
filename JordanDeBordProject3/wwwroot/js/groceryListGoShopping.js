@@ -18,8 +18,7 @@
         }
         else if (incoming.type === "ACCESS-REVOKED") {
             let access = $(`#permission-${incoming.data}`);
-            if (access.length > 0)
-            {
+            if (access.length > 0) {
                 location.reload();
             }
         }
@@ -31,6 +30,14 @@
         }
         else if (incoming.type === "ITEM-REMOVED") {
             _removeShoppingRow(incoming.data)
+        }
+
+        else if (incoming.type === "LIST-DELETED")
+        {
+            let access = $(`#shop-table-${incoming.data}`);
+            if (access.length > 0) {
+                location.reload();
+            }
         }
 
     });

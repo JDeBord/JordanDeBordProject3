@@ -25,6 +25,12 @@
         else if (incoming.type === "ITEM-REMOVED") {
             _removeItemRow(incoming.data, incoming.data2);
         }
+        else if (incoming.type === "LIST-DELETED") {
+            let access = $(`#edit-list-${incoming.data}`);
+            if (access.length > 0) {
+                location.reload();
+            }
+        }
     });
 
     // Start connection and catch errors.

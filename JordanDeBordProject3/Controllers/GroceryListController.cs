@@ -334,6 +334,32 @@ namespace JordanDeBordProject3.Controllers
             return Ok();
         }
 
+        public async Task<IActionResult> UpdateListRow(int id) 
+        {
+            var list = await _groceryListRepository.ReadAsync(id);
+            var user = await _userRepository.ReadAsync(User.Identity.Name);
+            if (list != null && user != null)
+            {
+                var permissionCheck = await _userRepository.CheckPermissionAsync(user.UserName, list);
+
+                // If the user has access to the list, return the partial view.
+                if (permissionCheck)
+                {
+                    var permission = await _groceryListRepository.GetPermissionAsync(list.Id, user.Id);
+                    var listToShow = new IndexListVM
+                    {
+                        Id = list.Id,
+                        GroceryListUserId = permission.Id,
+                        Name = list.Name,
+                        OwnerEmail = list.OwnerEmail,
+                        NumberItems = list.NumberItems
+                    };
+                    return PartialView("Views/Home/_ListRow.cshtml", listToShow);
+                }
+            }
+            return Ok();
+        }
+
         public async Task<IActionResult> GoShopping(int id) 
         {
             var list = await _groceryListRepository.ReadAsync(id);
