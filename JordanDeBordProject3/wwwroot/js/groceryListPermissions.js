@@ -9,16 +9,12 @@
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
         console.log(incoming);
-        // We just log the messages on this page. The owner can not revoke his own access.
-        // Per the project specs, we force an update on any change here.
-        if (incoming.type === "LIST-CREATED") {
-            
-        }
-        else if (incoming.type === "PERMISSION-GRANTED") {
-            
-        }
-        else if (incoming.type === "ACCESS-REVOKED") {
-            
+
+        if (incoming.type === "LIST-DELETED") {
+            let access = $(`#perm-table-${incoming.data}`);
+            if (access.length > 0) {
+                location.reload();
+            }
         }
     });
 

@@ -1,12 +1,12 @@
 ﻿@model GroceryItemVM
-<tr id="edit-row-@Model.Id">
-    <td>
+<tr id="edit-row-@Model.Id" class="row">
+    <td class="col-md-3">
         @Html.DisplayFor(modelItem => Model.Name)
     </td>
-    <td>
+    <td class="col-md-2">
         @Html.DisplayFor(modelItem => Model.QuantityToBuy)
     </td>
-    <td>
+    <td class="col-md-2">
         <a tabindex="0" id="removeItem-@Model.Id"class="btn btn-danger btn-sm removeAjax" data-toggle="popover" title="Are you sure?" data-trigger="focus" data-content="" asp-action="RemoveItemAjax" asp-controller="GroceryList" asp-route-id="@Model.Id">Delete</a>
     </td>
 </tr>

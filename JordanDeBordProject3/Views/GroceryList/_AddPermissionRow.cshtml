@@ -1,9 +1,9 @@
 ﻿@model PermissionsUserVM
-<tr id="perm-row-@Model.Id">
-    <td>
+<tr id="perm-row-@Model.Id" class="row">
+    <td class="col-md-4">
         @Html.DisplayFor(modelItem => Model.EmailAddress)
     </td>
-    <td>
+    <td class="col-md-1">
         <a tabindex="0" class="btn btn-danger btn-sm revokeAjax" data-toggle="popover" title="Are you sure?" data-trigger="focus" data-content="" asp-action="RevokeAccessAjax" asp-controller="GroceryList" asp-route-id="@Model.Id" >Delete</a>
     </td>
 </tr>

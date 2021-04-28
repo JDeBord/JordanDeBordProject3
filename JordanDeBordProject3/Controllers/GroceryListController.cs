@@ -448,7 +448,7 @@ namespace JordanDeBordProject3.Controllers
             // set title
 
             var ownerName = await _userRepository.GetNameAsync(ownerEmail);
-            ViewData["Title"] = $"Editing {list.Name}";
+            ViewData["Title"] = $"Edit Grocery List";
             ViewData["OwnerName"] = ownerName;
             ViewData["Owner"] = owner;
             
@@ -485,7 +485,7 @@ namespace JordanDeBordProject3.Controllers
 
 
             // set Title
-            ViewData["Title"] = $"Editing Permissions for {list.Name}";
+            ViewData["Title"] = $"Grocery List Permissions";
             ViewData["ListName"] = list.Name;
             ViewData["ListId"] = list.Id;
 

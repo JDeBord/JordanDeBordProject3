@@ -7,7 +7,7 @@
     var groceryItem = new CreateGroceryItemVM { GroceryListId=Model.Id};
 }
 
-<h1>Owner: @ownerName</h1>
+<h2>Owner: @ownerName</h2>
 
 <div id="alertArea" class="alert alert-warning" role="alert" style="display:none">
     <span id="messageArea"></span>
@@ -35,16 +35,17 @@
 </button>
 <partial name="_AddGroceryItemModal" model="@groceryItem" />
 <br />
+<br />
 <table class="table">
     <thead>
-        <tr>
-            <th>
+        <tr class="row">
+            <th class="col-md-3">
                 Item Name
             </th>
-            <th>
+            <th class="col-md-2">
                 Quantity to Buy
             </th>
-            <th></th>
+            <th class="col-md-2"></th>
 
         </tr>
     </thead>

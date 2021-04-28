@@ -2,7 +2,7 @@
 
 <div class="modal fade" id="grantPermissionModal" tabindex="-1" role="dialog"
      aria-labelledby="modalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal">
         <div id="mainContent" class="modal-content">
             <form id="grantPermissionForm" asp-controller="GroceryList" asp-action="GrantPermission">
 
@@ -15,8 +15,8 @@
                 <input hidden readonly asp-for="ListId" value="@Model.ListId" />
                 <div class="modal-body">
                     <div class="form-group row">
-                        <label asp-for="EmailAddress" class="col-sm-2 col-form-label"></label>
-                        <div class="col-sm-10">
+                        <label asp-for="EmailAddress" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-7">
                             <input asp-for="EmailAddress" class="form-control" />
                             <span asp-validation-for="EmailAddress" class="text-danger"></span>
                         </div>
