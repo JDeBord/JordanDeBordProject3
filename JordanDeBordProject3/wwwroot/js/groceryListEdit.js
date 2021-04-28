@@ -172,13 +172,10 @@
 
     // OTHER METHODS/FUNCTIONS
 
-    //function _updateListName(listId, newName) {
-    //    $(`#listName-${listId}`).value(newName);
-    //}
+
     function _updateListName(listId, newName) {
         let data = $(`#ListName-${listId}`);
         if (data.length > 0) {
-            //location.reload();
             $(`#ListName-${listId}`).val(newName);
         }
     }

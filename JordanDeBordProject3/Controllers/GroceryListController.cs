@@ -226,14 +226,16 @@ namespace JordanDeBordProject3.Controllers
 
             if (user != null && list != null)
             {
-                var permission = await _userRepository.CheckPermissionAsync(user.UserName, list);
+                var permissionCheck = await _userRepository.CheckPermissionAsync(user.UserName, list);
 
                 // If the user has access to the list, return the partial view.
-                if (permission)
+                if (permissionCheck)
                 {
+                    var permission = await _groceryListRepository.GetPermissionAsync(list.Id, user.Id);
                     var listToShow = new IndexListVM
                     {
                         Id = list.Id,
+                        GroceryListUserId = permission.Id,
                         Name = list.Name,
                         OwnerEmail = list.OwnerEmail,
                         NumberItems = list.NumberItems

@@ -30,16 +30,18 @@ namespace JordanDeBordProject3.Controllers
         {
             var userName = User.Identity.Name;
 
-            var groceryLists = await _userRepository.ReadAllListsAsync(userName);
+            //var groceryLists = await _userRepository.ReadAllListsAsync(userName);
+            var listAccess = await _userRepository.ReadListAccessAsync(userName);
 
             ViewData["Title"] = "Grocery List Home Page";
-            var model = groceryLists.Select(list =>
+            var model = listAccess.Select(list =>
                 new IndexListVM
                 {
-                    Id = list.Id,
-                    Name = list.Name,
-                    OwnerEmail = list.OwnerEmail,
-                    NumberItems = list.NumberItems
+                    Id = list.GroceryListId,
+                    GroceryListUserId = list.Id,
+                    Name = list.GroceryList.Name,
+                    OwnerEmail = list.GroceryList.OwnerEmail,
+                    NumberItems = list.GroceryList.NumberItems
                 });
            
             return View(model);

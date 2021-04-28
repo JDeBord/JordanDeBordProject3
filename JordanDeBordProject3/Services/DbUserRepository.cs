@@ -50,6 +50,18 @@ namespace JordanDeBordProject3.Services
             return lists;
         }
 
+        public async Task<ICollection<GroceryListUser>> ReadListAccessAsync(string userName) 
+        {
+            var user = await ReadAsync(userName);
+
+            var listAccess = await _database.GroceryListUsers
+                                    .Include(u => u.ApplicationUser)
+                                    .Include(l => l.GroceryList)
+                                    .Where(us => us.ApplicationUser.UserName == userName).ToListAsync();
+
+            return listAccess;
+        }
+
         public async Task<ApplicationUser> ReadAsync(string userName)
         {
             var user = await _database.Users.Include(gl => gl.GroceryListUsers)

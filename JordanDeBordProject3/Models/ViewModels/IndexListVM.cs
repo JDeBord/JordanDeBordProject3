@@ -10,6 +10,8 @@ namespace JordanDeBordProject3.Models.ViewModels
     {
         public int Id { get; set; }
 
+        public int GroceryListUserId { get; set; }
+
         public string Name { get; set; }
 
         [Display(Name="Owner's Email")]

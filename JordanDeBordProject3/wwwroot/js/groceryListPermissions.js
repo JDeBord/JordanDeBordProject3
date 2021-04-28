@@ -8,14 +8,18 @@
     // Notification event listener.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
-
-        if (incoming.type === "PERMISSION-GRANTED") {
+        console.log(incoming);
+        // We just log the messages on this page. The owner can not revoke his own access.
+        // Per the project specs, we force an update on any change here.
+        if (incoming.type === "LIST-CREATED") {
+            
+        }
+        else if (incoming.type === "PERMISSION-GRANTED") {
             
         }
         else if (incoming.type === "ACCESS-REVOKED") {
-
+            
         }
-
     });
 
     // Start connection and catch errors.
@@ -64,7 +68,7 @@
             .then(result => {
                 if (result?.message === "granted-permission") {
                     $('#createGroceryListModal').modal('hide');
-                    _notifyConnectedClientsTwoParts("PERMISSION-GRANTED", result.id, result.listId );
+                    _notifyConnectedClients("PERMISSION-GRANTED", result.id, result.listId );
                     $('#messageArea').html("A user was granted access!");
                     $('#alertArea').show(400);
                     location.reload();
@@ -98,7 +102,7 @@
             .then(result => {
                 if (result?.message === "access-revoked") {
                     console.log('Success: the user access was revoked');
-                    _notifyConnectedClients("ACCESS-REVOKED", result.id);
+                    _notifyConnectedClients("ACCESS-REVOKED", result.id, null);
                     location.reload();
                 }
                 else if (result?.message === "no-access") {
@@ -169,25 +173,26 @@
     }
 
 
-    // Function to send notification to clients. 
-    function _notifyConnectedClients(type, data) {
-        let message = {
-            type, data
-        };
-        console.log(JSON.stringify(message));
-        connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
-            .catch(function (err) {
-                return console.error(err.toString());
-            });
-    }
-    function _notifyConnectedClientsTwoParts(type, data, data2) {
+     //Function to send notification to clients. 
+    function _notifyConnectedClients(type, data, data2) {
         let message = {
             type, data, data2
         };
         console.log(JSON.stringify(message));
+        console.log(connection.state);
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
             .catch(function (err) {
                 return console.error(err.toString());
             });
     }
+    //function _notifyConnectedClientsTwoParts(type, data, data2) {
+    //    let message = {
+    //        type, data, data2
+    //    };
+    //    console.log(JSON.stringify(message));
+    //    connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
+    //        .catch(function (err) {
+    //            return console.error(err.toString());
+    //        });
+    //}
 })();

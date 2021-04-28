@@ -8,16 +8,16 @@
     // Notification event listener.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
-        console.log(incoming)
+        console.log(incoming);
 
         if (incoming.type === "LIST-CREATED") {
             _updateListTable(incoming.data);
         }
-        else if (incoming.type === "ACCESS-GRANTED") {
-            _updateListTable(incoming.otherId);
+        else if (incoming.type === "PERMISSION-GRANTED") {
+            _updateTablePermission(incoming.data, incoming.data2);
         }
         else if (incoming.type === "ACCESS-REVOKED") {
-
+            _removeRow(incoming.data);
         }
         else if (incoming.type === "LIST-UPDATED") {
 
@@ -92,6 +92,31 @@
 
 
     // OTHER METHODS/FUNCTIONS
+
+    // Function to remove the row after Deletion or Access Revocation.
+    function _removeRow(accessId) {
+        let rowToDelete = document.querySelector(`#index-row-${accessId}`);
+
+        if (rowToDelete != null) {
+            $(`#index-row-${accessId}`).hide(400, () => {
+                rowToDelete.replaceWith("");
+            })
+        }
+    }
+
+    // Update the table if the row doesn't already exist.
+    // This prevents repeat updates if multiple people are granted
+    //      Access to the same list.
+    function _updateTablePermission(accessId, listId) {
+        let len = $(`#index-row-${accessId}`).length;
+        if (len > 0) {
+            // element exists so no action.
+        }
+        else {
+            _updateListTable(listId);
+        }
+
+    }
 
     // Function to add grocery list to index page.
     function _updateListTable(listId) {
