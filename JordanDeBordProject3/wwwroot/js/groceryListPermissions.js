@@ -1,11 +1,16 @@
 ﻿'use strict';
+// Some portions of this was provided by (and modified from) Dr. Roach's Labs
+
+// Self calling function when the page loads. Sets up our event listensers and
+//  connection. 
 (function _groceryListPermissions() {
     console.log("Permissions")
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/groceryListHub")
         .build();
 
-    // Notification event listener.
+    // Notification event listener. If the list is deleted while on the page for it
+    //  we force a reload, which will kick the user home as the Id is no longer valid.
     connection.on("Notification", (message) => {
         var incoming = JSON.parse(message);
         console.log(incoming);
@@ -23,29 +28,34 @@
         return console.error(err.toString());
     });
 
+    // Setup the popovers for the delete button for each granted permission.
     _setupPopovers();
 
     // EVENT LISTENERS FROM PAGE.
     const grantPermissionForm = document.querySelector("#grantPermissionForm");
 
+    // Listener to close out of the alert area.
     $('#alertCloseBtn').on('click', function _hideAlert() {
         $('#alertArea').hide(400);
     });
 
-    // If the user submits the name, verify and submit it with Ajax.
+    // Event listener for our form, which (when submitted) will call the Ajax function to 
+    //  add the permission.
     grantPermissionForm.addEventListener('submit', (e) => {
         e.preventDefault();
         _clearErrorMessages();
         _submitPermissionWithAjax();
     });
 
+    // Event listener to prevent the default behavior for the delete permission button.
     $(document).on('click', '.revokeAjax', (e) => {
         e.preventDefault();
     });
 
 
-
     // AJAX ACTIONS
+
+    // Function to submit our new permission to be added with ajax, and take action based upon the response.
     function _submitPermissionWithAjax() {
         const url = grantPermissionForm.getAttribute('action') + "ajax";
         const method = grantPermissionForm.getAttribute('method');
@@ -88,6 +98,8 @@
             })
     }
 
+    // Function to send the ajax request to remove the permission from the database.
+    //  We then take appropriate action based upon the response.
     function _sendRevokeAccessAjax(url, accessId) {
         fetch(url, {
             method: "post",
@@ -126,7 +138,6 @@
 
     // OTHER METHODS/FUNCTIONS
 
-
     // Function to clear error messages.
     function _clearErrorMessages() {
         $.each($('span[data-valmsg-for]'), function _clearSpan() {
@@ -134,7 +145,7 @@
         });
     }
 
-    // Function to report errors.
+    // Function to report errors to the user.
     function _reportErrors(response) {
         for (let key in response) {
             if (response[key].errors.length > 0) {
@@ -150,6 +161,8 @@
         }
     }
 
+    // Function to setup the popovers on the delete buttons. This adds the second
+    //  button to confirm the deletion.
     function _setupPopovers() {
         $('[data-toggle="popover"]').popover();
         $('.popover-dismiss').popover({
@@ -172,13 +185,14 @@
     }
 
 
-     //Function to send notification to clients. 
+    // Function to send notification to clients. In this case, data is the Id of the
+    //  permission (the GrocerListUser), while data2 is used to report the list that the
+    //  new permission is for.
     function _notifyConnectedClients(type, data, data2) {
         let message = {
             type, data, data2
         };
         console.log(JSON.stringify(message));
-        console.log(connection.state);
         connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
             .catch(function (err) {
                 return console.error(err.toString());

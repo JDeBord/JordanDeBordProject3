@@ -1,4 +1,8 @@
 ﻿'use strict';
+// Some portions of this was provided by (and modified from) Dr. Roach's Labs
+
+// Self calling function when the page loads. Sets up our event listensers and
+//  connection. 
 (function _groceryListEdit() {
     console.log("Edit")
     const connection = new signalR.HubConnectionBuilder()
@@ -10,21 +14,30 @@
         var incoming = JSON.parse(message);
         console.log(incoming)
 
+            // If the user lost access to the list, force reload the page, kicking them
+            //  to the no access page.
         if (incoming.type === "ACCESS-REVOKED") {
             let access = $(`#permission-${incoming.data}`);
             if (access.length > 0) {
                 location.reload();
             }
         }
+            // If an item was added, update the list of items if it is for this list.
+            // Data is the item Id and Data2 is the list id.
         else if (incoming.type === "ITEM-ADDED") {
             _updateGroceryListTable(incoming.data, incoming.data2);
         }
+            // If the list name was changed, update the name. Data is the list id and data2 is the list name.
         else if (incoming.type === "LIST-UPDATED") {
             _updateListName(incoming.data, incoming.data2);
         }
+            // If an item was added, remove it from the list if it is for this list.
+            // Data is the item id and data2 is the list id.
         else if (incoming.type === "ITEM-REMOVED") {
             _removeItemRow(incoming.data, incoming.data2);
         }
+            // If the list was deleted, force reload the page if it was this list. This
+            //  will kick the user back home.
         else if (incoming.type === "LIST-DELETED") {
             let access = $(`#edit-list-${incoming.data}`);
             if (access.length > 0) {
@@ -38,6 +51,7 @@
         return console.error(err.toString());
     });
 
+    // Set up the popovers for the delete item buttons
     _setupPopovers();
 
     // EVENT LISTENERS FROM PAGE.
@@ -49,14 +63,14 @@
         $('#alertArea').hide(400);
     });
 
-    // If the user submits the new item, verify and submit it with Ajax.
+    // If the user submits the new item, submit it with Ajax.
     createGroceryItemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         _clearErrorMessages();
         _submitItemWithAjax();
     });
 
-    // If the owner sends name change update.
+    // If the owner sends name change update, prevent the default and send it with Ajax.
     let btnSave = document.querySelector('#btnSave');
     if (btnSave != null)
     {
@@ -70,12 +84,16 @@
         })
     }
 
+    // Prevent default action on the delete buttons.
     $(document).on('click', '.removeAjax', (e) => {
         e.preventDefault();
     });
 
 
     // AJAX ACTIONS
+
+    // Function to update the name of the list using Ajax. We then take appropriate action
+    //  based upon the response. 
     function _updateListNameWithAjax(url, list) {
         let formData = new FormData();
         formData.append("Id", list.id);
@@ -115,6 +133,8 @@
             })
     }
 
+    // Function to send an Ajax request to create an item. We then take appropriate action based
+    //  upon the response. 
     function _submitItemWithAjax() {
         const url = createGroceryItemForm.getAttribute('action') + "ajax";
         const method = createGroceryItemForm.getAttribute('method');
@@ -146,6 +166,8 @@
             })
     }
 
+    // Function to send a request to delete an Item with Ajax. We then take appropriate action
+    //  based upon the response. 
     function _sendRemoveItemAjax(url, id) {
         fetch(url, {
             method: "post",
@@ -178,7 +200,7 @@
 
     // OTHER METHODS/FUNCTIONS
 
-
+    // If we get a notification that the name has changed, update the name on the page.
     function _updateListName(listId, newName) {
         let data = $(`#ListName-${listId}`);
         if (data.length > 0) {
@@ -186,6 +208,8 @@
         }
     }
 
+    // If we get a notification that an item has been added, we get the row for that item.
+    //  If this item is not for this result, our append will not fire, if it is we add it to the list.
     function _updateGroceryListTable(itemId, listId) {
         fetch(`/grocerylist/listitemrow/${itemId}`)
             .then(response => {
@@ -203,6 +227,8 @@
             });
     }
 
+    // If an item has been deleted, see if it exists in the table. If so, hide it
+    //  then replace it with an empty string to remove it.
     function _removeItemRow(rowId, listId) {
         let rowToDelete = document.querySelector(`#edit-row-${rowId}`);
 
@@ -222,7 +248,7 @@
         });
     }
 
-    // Function to report errors.
+    // Function to report errors to users.
     function _reportErrors(response) {
         for (let key in response) {
             if (response[key].errors.length > 0) {
@@ -262,7 +288,8 @@
     }
 
     // Function to send notification to clients. 
-
+    //  for name changes, data is the listId and data2 is the name, for items data is itemId and 
+    //  data2 is listId.
     function _notifyConnectedClientsTwoParts(type, data, data2) {
         let message = {
             type, data, data2
