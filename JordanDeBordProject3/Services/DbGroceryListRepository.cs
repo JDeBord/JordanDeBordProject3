@@ -56,6 +56,8 @@ namespace JordanDeBordProject3.Services
 
                     return userAccess.Id;
                 }
+
+                return -1;
             }
             return null;
         }
@@ -85,15 +87,28 @@ namespace JordanDeBordProject3.Services
             return groceryList;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<int?> DeleteAsync(int id, string userName)
         {
             var list = await ReadAsync(id);
 
-            if (list != null)
+            var user = await _database.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+
+
+            if (list != null && user != null)
             {
-                _database.Remove(list);
-                await _database.SaveChangesAsync();
+                var listOwner = await GetOwnerAsync(id);
+
+                if (listOwner == user.Email)
+                {
+                    _database.Remove(list);
+                    await _database.SaveChangesAsync();
+
+                    return id;
+                }
+
+                return -1;
             }
+            return null;
         }
 
         public async Task<GroceryList> ReadAsync(int id)
@@ -194,7 +209,7 @@ namespace JordanDeBordProject3.Services
 
         public async Task<string> GetOwnerAsync(int id) 
         {
-            var owner = await _database.GroceryListUsers.Where(u => u.Owner == true).FirstOrDefaultAsync(l => l.GroceryListId == id);
+            var owner = await _database.GroceryListUsers.Include(a => a.ApplicationUser).Where(u => u.Owner == true).FirstOrDefaultAsync(l => l.GroceryListId == id);
 
             return owner.ApplicationUser.Email;
         }

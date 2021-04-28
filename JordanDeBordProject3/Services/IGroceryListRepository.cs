@@ -14,9 +14,9 @@ namespace JordanDeBordProject3.Services
 
         Task UpdateAsync(GroceryList groceryList);
 
-        Task DeleteAsync(int id);
+        Task<int?> DeleteAsync(int id, string userId);
 
-        Task<int?> GrantPermissionAsync(int listId, string email);
+        Task<int?> GrantPermissionAsync(int listId, string userName);
 
         Task<bool> RemoveUserAsync(int accessId);
 

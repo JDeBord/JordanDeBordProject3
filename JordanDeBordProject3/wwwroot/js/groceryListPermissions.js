@@ -73,6 +73,11 @@
                     $('#alertArea').show(400);
                     location.reload();
                 }
+                else if (result?.message === "previous-access") {
+                    $('#createGroceryListModal').modal('hide');
+                    $('#messageArea').html("User already has access!");
+                    $('#alertArea').show(400);
+                }
                 else if (result?.message === "invalid-permission") {
                     $('#createGroceryListModal').modal('hide');
                     $('#messageArea').html("Invalid Email!");
@@ -164,8 +169,6 @@
             let btnYesId = "btnYes-" + id;
             $('.popover-body').html(`<button id="${btnYesId}">Yes</button><button>No</button>`);
             $(`#${btnYesId}`).on('click', function _onYes() {
-                console.log(url);
-                console.log(id);
                 _sendRevokeAccessAjax(url, id);
             });
         });
@@ -185,14 +188,5 @@
                 return console.error(err.toString());
             });
     }
-    //function _notifyConnectedClientsTwoParts(type, data, data2) {
-    //    let message = {
-    //        type, data, data2
-    //    };
-    //    console.log(JSON.stringify(message));
-    //    connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
-    //        .catch(function (err) {
-    //            return console.error(err.toString());
-    //        });
-    //}
+
 })();

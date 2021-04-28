@@ -35,7 +35,7 @@
     <tbody id="table-home-index">
         @foreach (var item in Model)
         {
-            <tr id="index-row-@item.GroceryListUserId">
+            <tr id="index-row-@item.GroceryListUserId" class="index-row-list-@item.Id">
                 <partial name="_ListRow" model="@item" />
             </tr>
         }

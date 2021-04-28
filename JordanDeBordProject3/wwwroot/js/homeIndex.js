@@ -14,15 +14,20 @@
             _updateListTable(incoming.data);
         }
         else if (incoming.type === "PERMISSION-GRANTED") {
-            _updateTablePermission(incoming.data, incoming.data2);
+            let rowInfo = $(`#index-row-${incoming.data}`);
+
+            if (!(rowInfo.length > 0)) {
+                _updateTablePermission(incoming.data, incoming.data2);
+            }
+            
         }
         else if (incoming.type === "ACCESS-REVOKED") {
             _removeRow(incoming.data);
         }
-        else if (incoming.type === "LIST-UPDATED") {
-
+        else if (incoming.type === "LIST-DELETED") {
+            _removeRowOnDelete(incoming.data);
         }
-        else if (incoming.type === "ITEM-REMOVED" || incoming.type === "ITEM-ADDED")
+        else if (incoming.type === "ITEM-REMOVED" || incoming.type === "ITEM-ADDED" || incoming.type === "LIST-UPDATED")
         {
 
         }
@@ -33,9 +38,16 @@
         return console.error(err.toString());
     });
 
+    _setupPopovers();
 
     // EVENT LISTENERS FROM PAGE.
     const createGroceryListForm = document.querySelector("#createGroceryListForm");
+
+    // If the user clicks on the delete button, prevent it from submitting.
+    $(document).on('click', '.deleteAjax', (e) => {
+        e.preventDefault();
+    });
+
 
     // If the user clicks the close button on the alert area, hide it.
     $('#alertCloseBtn').on('click', function _hideAlert() {
@@ -90,11 +102,45 @@
             })
     }
 
-
+    
+    function _sendDeleteAjax(url, id) {
+        fetch(url, {
+            method: "post",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${id}`
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('There was a network error!');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result?.message === "deleted") {
+                    console.log('Success: the item was removed');
+                    _notifyConnectedClients("LIST-DELETED", result.id);
+                }
+                else if (result?.message === "not-owner") {
+                    $('#messageArea').html("Only the owner can delete the list!");
+                    $('#alertArea').show(400);
+                }
+                else if (result?.message === "invalid-request") {
+                    $('#messageArea').html("The list no longer exists!");
+                    $('#alertArea').show(400);
+                }
+                else {
+                    _reportErrors(result);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
     // OTHER METHODS/FUNCTIONS
 
     // Function to remove the row after Deletion or Access Revocation.
     function _removeRow(accessId) {
+
         let rowToDelete = document.querySelector(`#index-row-${accessId}`);
 
         if (rowToDelete != null) {
@@ -104,18 +150,25 @@
         }
     }
 
+    function _removeRowOnDelete(listId) {
+        $(`.index-row-list-${listId}`).first().hide(400, () => {
+            $(`.index-row-list-${listId}`).replaceWith("");
+        })
+    }
+
     // Update the table if the row doesn't already exist.
     // This prevents repeat updates if multiple people are granted
     //      Access to the same list.
     function _updateTablePermission(accessId, listId) {
-        let len = $(`#index-row-${accessId}`).length;
-        if (len > 0) {
-            // element exists so no action.
+        let row = $(`#index-row-${accessId}`);
+        if (!(row.len > 0)) {
+            // If the row for that permission doesn't exist, check if its already represented.
+            let rowToCheck = $(`.index-row-list-${listId}`).first()
+            
+            if (!(rowToCheck.length > 0)) {
+                _updateListTable(listId);
+            }
         }
-        else {
-            _updateListTable(listId);
-        }
-
     }
 
     // Function to add grocery list to index page.
@@ -129,6 +182,7 @@
             })
             .then(result => {
                 $('#table-home-index').append(result);
+                _setupPopovers();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -157,6 +211,29 @@
                 }
             }
         }
+    }
+
+    // Function to set up popovers
+    function _setupPopovers() {
+        $('[data-toggle="popover"]').popover();
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        });
+
+        $('[data-toggle="popover"]').on('inserted.bs.popover', function _onPopoverInserted() {
+            let $a = $(this);
+            let url = $a.attr('href');
+            let idx = url.lastIndexOf('/');
+            let id = url.substring(idx + 1);
+            url = url.substring(0, idx);
+            let btnYesId = "btnYes-" + id;
+            $('.popover-body').html(`<button id="${btnYesId}">Yes</button><button>No</button>`);
+            $(`#${btnYesId}`).on('click', function _onYes() {
+                console.log(url);
+                console.log(id);
+                _sendDeleteAjax(url, id);
+            });
+        });
     }
 
     // Function to send notification to clients. 

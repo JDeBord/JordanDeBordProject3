@@ -40,6 +40,28 @@ namespace JordanDeBordProject3.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteAjax(int id) 
+        {
+            var list = await _groceryListRepository.ReadAsync(id);
+            
+            if (list != null) 
+            {
+
+                var result = await _groceryListRepository.DeleteAsync(id, User.Identity.Name);
+
+                if (result == id)
+                {
+                    return Json(new { id, message = "deleted" });
+                }
+                else if (result == -1)
+                {
+                    return Json(new { id, message = "not-owner" });
+                }
+            }
+            return Json(new { id, message = "invalid-request" });
+        }
+
+        [HttpPost]
         public async Task<IActionResult> UpdateAjax(EditListVM editListVM) 
         {
             if (editListVM.ListName == null)
@@ -111,10 +133,18 @@ namespace JordanDeBordProject3.Controllers
 
                 var result = await _groceryListRepository.GrantPermissionAsync(list.Id, email);
 
+                // If the user and list both existed.
                 if (result != null)
                 {
+                    // If the user already had access.
+                    if (result == -1)
+                    {
+                        return Json(new { listId = list.Id, message = "previous-access" });
+                    }
+
                     return Json(new { id = result, message = "granted-permission", listId=list.Id});
                 }
+
                 else 
                 {
                     return Json(new { listId = list.Id, message = "invalid-permission" });

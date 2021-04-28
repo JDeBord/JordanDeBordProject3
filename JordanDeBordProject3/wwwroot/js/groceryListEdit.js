@@ -256,16 +256,6 @@
     }
 
     // Function to send notification to clients. 
-    function _notifyConnectedClients(type, data) {
-        let message = {
-            type, data
-        };
-        console.log(JSON.stringify(message));
-        connection.invoke("SendMessageToAllAsync", JSON.stringify(message))
-            .catch(function (err) {
-                return console.error(err.toString());
-            });
-    }
 
     function _notifyConnectedClientsTwoParts(type, data, data2) {
         let message = {
