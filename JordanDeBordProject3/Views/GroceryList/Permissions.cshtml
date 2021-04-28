@@ -31,10 +31,17 @@
         }
     </tbody>
 </table>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#grantPermissionModal">
-    Grant Permission
-</button> |
-<a class="btn btn-primary" asp-action="Index" asp-controller="Home">Back to Home</a>
+<div class="row">
+    <div class="col-md-2">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#grantPermissionModal">
+            Grant Permission
+        </button>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-primary" asp-action="Index" asp-controller="Home">Back to Home</a>
+    </div>
+
+</div>
 <partial name="_GrantPermissionModal" model="@newPermission" />
 
 @section Scripts{

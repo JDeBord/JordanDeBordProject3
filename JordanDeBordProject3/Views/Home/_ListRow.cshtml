@@ -14,7 +14,7 @@
 </td>
 <td>
     <a id="homeShop-@Model.Id" asp-controller="GroceryList" asp-action="GoShopping" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">Go Shopping</a> 
-    <a id="homeEdit-@Model.Id" asp-controller="GroceryList" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info text-light btn-sm">Edit</a> 
+    <a id="homeEdit-@Model.Id" asp-controller="GroceryList" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info btn-sm">Edit</a> 
     <a tabindex="0" id="homeDelete-@Model.Id" class="btn btn-danger btn-sm text-light deleteAjax" data-toggle="popover" title="Are you sure?" data-trigger="focus" data-content="" asp-action="deleteAjax" asp-controller="GroceryList" asp-route-id="@Model.Id">Delete</a> 
-    <a id="homePerms-@Model.Id" asp-controller="GroceryList" asp-action="Permissions" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Permissions</a>
+    <a id="homePerms-@Model.Id" asp-controller="GroceryList" asp-action="Permissions" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">Permissions</a>
 </td>
