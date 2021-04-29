@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace JordanDeBordProject3.Services
 {
+    /// <summary>
+    /// Interface for our User Repository. It contains the method headers needed for some general
+    /// operations regarding users, which are to be implemented in the repository.
+    /// </summary>
     public interface IUserRepository
     {
         Task<ApplicationUser> ReadAsync(string userName);

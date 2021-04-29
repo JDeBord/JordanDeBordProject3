@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace JordanDeBordProject3.Services
 {
+    /// <summary>
+    /// Interface for our Grocery List Repository. Provides method headers for CRUD operations for
+    /// grocery lists which are to be implemented in our Repository. 
+    /// </summary>
     public interface IGroceryListRepository
     {
         Task<GroceryList> ReadAsync(int id);
