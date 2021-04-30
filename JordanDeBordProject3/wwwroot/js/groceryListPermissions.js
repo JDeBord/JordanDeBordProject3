@@ -53,7 +53,7 @@
     });
 
 
-    // AJAX ACTIONS
+    // AJAX ACTIONS AND OTHER FUNCTIONS
 
     // Function to submit our new permission to be added with ajax, and take action based upon the response.
     function _submitPermissionWithAjax() {
@@ -135,8 +135,6 @@
             });
     }
            
-
-    // OTHER METHODS/FUNCTIONS
 
     // Function to clear error messages.
     function _clearErrorMessages() {

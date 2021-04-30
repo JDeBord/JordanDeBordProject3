@@ -86,7 +86,7 @@
 
 
 
-    // AJAX ACTIONS
+    // AJAX ACTIONS AND OTHER FUNCTIONS
     // This when the create list form is submitted, this function sends a fetch
     //      request using ajax. It then checks the result and takes appropriate action.
     function _submitWithAjax() {
@@ -158,7 +158,6 @@
                 console.error('Error:', error);
             });
     }
-    // OTHER METHODS/FUNCTIONS
 
     // Function to remove the row after access revocation using the Id for the GroceryListUser
     //  which grants access to the list. If a row exists we find and fade it out, then we

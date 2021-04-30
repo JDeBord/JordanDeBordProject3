@@ -75,7 +75,7 @@
     })
 
 
-    // AJAX ACTIONS
+    // AJAX ACTIONS AND OTHER FUNCTIONS
 
     // Function to send ajax request to update item in database to show it was shopped, and to
     //  send a notification to all other shoppers for that list, so it automatically updates to checked.
@@ -101,6 +101,9 @@
                 }
                 else if (result?.message === "no-item") {
                     console.log('Item no longer exists.')
+                }
+                else {
+                    _reportErrors(result);
                 }
             })
             .catch(error => {
@@ -133,15 +136,19 @@
                 else if (result?.message === "no-item") {
                     console.log('Item no longer exists.')
                 }
+                else {
+                    _reportErrors(result);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
     }
 
-    // OTHER METHODS/FUNCTIONS
 
     // If we get a notification that the list name has changed, update it.
+    // This will only update the name if we are on the Go Shopping page for 
+    // the list that has changed. 
     function _updateListName(listId, newName) {
         $(`#shop-title-${listId}`).html(newName);
     }
@@ -158,7 +165,7 @@
                 return response.text();
             })
             .then(result => {
-                let row = $(`#shop-row-${id}`);
+                let row = $(`#shop-row-${id}`); // If the row with the id exists, replace it.
                 if (row != null)
                 {
                     $(`#shop-row-${id}`).html(result);
@@ -178,9 +185,7 @@
                             // if unchecked, send uncheck
                             _sendUnCheckWithAjax("/grocerylist/uncheckAjax", id);
                         }
-                    })
-
-                    
+                    })  
                 }
             })
             .catch(error => {
@@ -221,6 +226,9 @@
                         }
                     })
                 }
+                else {
+                    console.log('Invalid item or list.');
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -231,10 +239,26 @@
     function _removeShoppingRow(itemId) {
         let rowToDelete = document.querySelector(`#shop-row-${itemId}`);
 
-        if (rowToDelete != null) {
+        if (rowToDelete !== null) {
             $(`#shop-row-${itemId}`).hide(400, () => {
                 rowToDelete.replaceWith("");
             })
+        }
+    }
+
+    // Function to report errors to users.
+    function _reportErrors(response) {
+        for (let key in response) {
+            if (response[key].errors.length > 0) {
+                for (let error of response[key].errors) {
+                    console.log(key + " : " + error.errorMessage);
+                    const selector = `span[data-valmsg-for="${key}"]`
+                    const errMessageSpan = document.querySelector(selector);
+                    if (errMessageSpan !== null) {
+                        errMessageSpan.textContent = error.errorMessage;
+                    }
+                }
+            }
         }
     }
 

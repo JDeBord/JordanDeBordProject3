@@ -90,7 +90,7 @@
     });
 
 
-    // AJAX ACTIONS
+    // AJAX ACTIONS AND OTHER FUNCTIONS
 
     // Function to update the name of the list using Ajax. We then take appropriate action
     //  based upon the response. 
@@ -198,9 +198,9 @@
             });
     }
 
-    // OTHER METHODS/FUNCTIONS
 
     // If we get a notification that the name has changed, update the name on the page.
+    // This will only update the title if we are on the edit page for that list.
     function _updateListName(listId, newName) {
         let data = $(`#ListName-${listId}`);
         if (data.length > 0) {
